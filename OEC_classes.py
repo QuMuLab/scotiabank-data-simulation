@@ -1,4 +1,4 @@
-import string, simpy, random, datetime
+import string, simpy, random, datetime, itertools
 from faker import Faker
 
 starting_fields = [
@@ -56,7 +56,7 @@ field_description_map = {
 }
 
 start_datetime = datetime.datetime(2026, 6, 11, 0, 0)
-simulation_days = 2 * 365
+simulation_days = 3 * 365
 
 event_logs = []
 incidents = []
@@ -312,6 +312,7 @@ class Incident(object):
         self.complaint_description = complaint_description
 
         self.created_at = self.env.now
+        self.event_sequence = itertools.count()
         self.work_sessions = 0
         self.clarification_count = 0
 
@@ -433,6 +434,7 @@ class Incident(object):
             "prevval" : prevval,
             "timestamp" : self.get_timestamp(),
             "username" : self.current_employee.username,
+            "sequence" : next(self.event_sequence),
             "incidenttype" : self.incident_type,
             "producttype" : self.product_type,
             "category" : self.category,
