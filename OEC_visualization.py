@@ -316,4 +316,4 @@ def build_dashboard(df: pd.DataFrame) -> Dash:
 
 def launch_dashboard(df: pd.DataFrame):
     app = build_dashboard(df)
-    app.run(debug = True)
+    app.run(debug = False)

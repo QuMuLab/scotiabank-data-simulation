@@ -6,7 +6,6 @@ from faker import Faker
 
 # TODO:
 # Incident End: Fraud resolution, customer satisfaction, reimbursement, root cause
-# Visualization
 
 # Incident Creation: customer type, cif, account type, account status, amount claimed, fees, charge fees, fraud, priority
 # Product Type
