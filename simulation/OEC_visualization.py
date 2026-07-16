@@ -2,9 +2,9 @@ from dash import Dash, html, dcc, Output, Input, State, ctx, no_update
 from dash.exceptions import PreventUpdate
 import pandas as pd
 
-from OEC_classes import simulation_days, start_datetime
+import OEC_config as config
 
-MAX_HOUR = simulation_days * 24
+MAX_HOUR = config.simulation_days * 24
 TICK_MS = 300
 
 STATUS_COLORS = {
@@ -18,7 +18,7 @@ def prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     df["timestamp_dt"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d %H:%M:%S.%f")
-    df["timestamp_hour"] = (df["timestamp_dt"] - start_datetime).dt.total_seconds() / 3600
+    df["timestamp_hour"] = (df["timestamp_dt"] - config.start_datetime).dt.total_seconds() / 3600
     df = df.sort_values(["timestamp_hour", "incident_itemno", "sequence"]).reset_index(drop = True)
 
     return df
@@ -61,12 +61,12 @@ def build_slider_marks(max_hour: float, target_marks: int = 8) -> dict:
     step_hours = step_months * 30 * 24
 
     return {
-        int(h): (start_datetime + pd.Timedelta(hours = h)).strftime("%b '%y")
+        int(h): (config.start_datetime + pd.Timedelta(hours = h)).strftime("%b '%y")
         for h in range(0, int(max_hour) + 1, int(step_hours))
     }
 
 def format_hour(hour: float) -> str:
-    return (start_datetime + pd.Timedelta(hours = hour)).strftime("%b %d, %H:%M")
+    return (config.start_datetime + pd.Timedelta(hours = hour)).strftime("%b %d, %H:%M")
 
 def incident_summary_text(df: pd.DataFrame, incident_itemno: str) -> str:
     rows = df[df["incident_itemno"] == incident_itemno]
@@ -278,7 +278,7 @@ def build_dashboard(df: pd.DataFrame) -> Dash:
         Input("current-hour-store", "data"),
     )
     def render_frame(hour):
-        ts = start_datetime + pd.Timedelta(hours = hour)
+        ts = config.start_datetime + pd.Timedelta(hours = hour)
         cards = []
 
         for name in employees:

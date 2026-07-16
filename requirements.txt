@@ -2,3 +2,4 @@ simpy
 pandas
 Faker
 dash
+pyyaml

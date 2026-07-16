@@ -1,32 +1,38 @@
-from OEC_classes import Employee, transits, event_logs, simulation_days
+from OEC_config import load_config, transits, event_logs
+from OEC_classes import Employee
 from OEC_visualization import launch_dashboard
 
 import simpy, random, string, pandas as pd
 from faker import Faker
 
 # TODO:
-# Incident End: Fraud resolution, customer satisfaction, reimbursement, root cause
+# yaml stores all customization
+# verify new .yaml file
 
-# Incident Creation: customer type, cif, account type, account status, amount claimed, fees, charge fees, fraud, priority
-# Product Type
-# Incident type percentages
+# Incident Creation: customer type, cif, account type, account status, amount claimed, fees, charge fees, fraud, priority rows
+
+# Product Type column
+
+# Incident End: Fraud resolution, customer satisfaction, reimbursement, root cause rows
 
 fake = Faker('en_CA')
 
-def generate_employees():
-    for _ in range(25):
+def generate_employees(count: int):
+    for _ in range(count):
         Employee(env, f"{fake.first_name()} {fake.last_name()}")
 
-def generate_transits():
-    for city in ["Toronto", "Kingston", "Montreal", "Ottawa", "Vancouver", "Calgary", "Edmonton", "Quebec City", "Winnipeg", "Halifax", "Moncton"]:
+def generate_transits(cities: list[str]):
+    for city in cities:
         transit_number = "".join(random.choices(string.digits, k = 5))
         transits.append(f"{transit_number} {city}")
 
 if __name__ == "__main__":
+    simulation_days, employee_count, transit_cities = load_config()
+
     env = simpy.Environment()
- 
-    generate_transits()
-    generate_employees()
+    
+    generate_employees(employee_count)
+    generate_transits(transit_cities)
     
     print("Running Simulation...")
     env.run(until = simulation_days * 24)

@@ -1,3 +1,5 @@
+import OEC_config as config
+from OEC_config import event_logs, incidents, transits
 import string, simpy, random, datetime, itertools
 from faker import Faker
 
@@ -55,29 +57,23 @@ field_description_map = {
     "priority" : "PRIORITY"
 }
 
-start_datetime = datetime.datetime(2026, 6, 11, 0, 0)
-simulation_days = 3 * 365
-
-event_logs = []
-incidents = []
-transits = []
+incident_numbers = set()
 unassigned_queue = []
 
-incident_numbers = set()
 fake = Faker('en_CA')
 
 def simulation_datetime(env_hour: float) -> datetime.datetime:
-    return start_datetime + datetime.timedelta(hours = env_hour)
+    return config.start_datetime + datetime.timedelta(hours = env_hour)
 
 def next_business_day(current: datetime.datetime) -> datetime.datetime:
-    work_start = current.replace(hour = 8, minute = 0, second = 0, microsecond = 0)
-    work_end = current.replace(hour = 16, minute = 0, second = 0, microsecond = 0)
+    work_start = current.replace(hour = config.work_day_start, minute = 0, second = 0, microsecond = 0)
+    work_end = current.replace(hour = config.work_day_end, minute = 0, second = 0, microsecond = 0)
 
     if current.weekday() >= 5:
         days_ahead = 7 - current.weekday()
 
         return (current + datetime.timedelta(days = days_ahead)).replace(
-            hour = 8, minute = 0, second = 0, microsecond = 0
+            hour = config.work_day_start, minute = 0, second = 0, microsecond = 0
         )
 
     if current < work_start:
@@ -90,7 +86,7 @@ def next_business_day(current: datetime.datetime) -> datetime.datetime:
     while next_day.weekday() >= 5:
         next_day += datetime.timedelta(days = 1)
 
-    return next_day.replace(hour = 8, minute = 0, second = 0, microsecond = 0)
+    return next_day.replace(hour = config.work_day_start, minute = 0, second = 0, microsecond = 0)
 
 def hours_until_work(env_hour: float) -> float:
     current = simulation_datetime(env_hour)
@@ -108,7 +104,7 @@ def business_hours_timeout(env: simpy.Environment, duration: float):
             continue
 
         current = simulation_datetime(env.now)
-        work_end = current.replace(hour = 16, minute = 0, second = 0, microsecond = 0)
+        work_end = current.replace(hour = config.work_day_end, minute = 0, second = 0, microsecond = 0)
         available = (work_end - current).total_seconds() / 3600
 
         if available <= 0:
@@ -119,6 +115,8 @@ def business_hours_timeout(env: simpy.Environment, duration: float):
         remaining -= chunk
 
 class Employee(object):
+    incident_variants = None
+
     def __init__(self, env: simpy.Environment, username: str):
         self.env = env
         self.username = username
@@ -181,24 +179,13 @@ class Employee(object):
 
         unassigned_queue.append(incident)
         return None
-
+    
     def create_incident(self):
-        from OEC_incidents import create_claim, create_complaint, create_request
+        from OEC_incidents import create_incident
 
-        create_incident_map = {
-            "Claims" : create_claim,
-            "Complaints" : create_complaint,
-            "Requests" : create_request
-        }
+        incident = create_incident(self.env, self)
 
-        incident_type = random.choices(
-            ["Claims", "Complaints", "Requests"],
-            weights = [0.4, 0.35, 0.25],
-            k = 1
-        )[0]
-        incident = create_incident_map[incident_type](self.env, self)
-
-        if simulation_days * 24 - self.env.now <= 0:
+        if config.simulation_days * 24 - self.env.now <= 0:
             return None
 
         return incident
@@ -383,7 +370,7 @@ class Incident(object):
             "chargefees" : 0,
             "potentialfraudfo" : random.choices(["Yes", "No"], weights = [0.25, 0.75], k = 1)[0],
             "prodchannel" : self.prod_channel,
-            "transactiondate" : (start_datetime - datetime.timedelta(days = random.randint(0, 14))).date(),
+            "transactiondate" : (config.start_datetime - datetime.timedelta(days = random.randint(0, 14))).date(),
             "producttype" : self.product_type,
             "complainttype" : self.complaint_type,
             "priority" : random.choice(["High", "Medium", "Low"])
@@ -447,6 +434,6 @@ class Incident(object):
         })
 
     def get_timestamp(self):
-        current_time = start_datetime + datetime.timedelta(hours = self.env.now)
+        current_time = config.start_datetime + datetime.timedelta(hours = self.env.now)
 
         return current_time.strftime("%Y-%m-%d %H:%M:%S.%f")
