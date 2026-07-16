@@ -1,6 +1,5 @@
 from OEC_config import load_config, transits, event_logs
 from OEC_classes import Employee
-from OEC_visualization import launch_dashboard
 
 import simpy, random, string, pandas as pd
 from faker import Faker
@@ -44,4 +43,6 @@ if __name__ == "__main__":
     csv_df = df[df["action"] != "Handoff"]
     csv_df.to_csv("OEC_simulation_results.csv", index = False)
 
+    from OEC_visualization import launch_dashboard
+    
     launch_dashboard(df)
