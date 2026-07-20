@@ -17,7 +17,7 @@ settings:
     maximum: 2
   employee_work_break: 4
   employee_clarification_wait:
-    minumum: 1
+    minimum: 1
     maximum: 24
 
 probabilities:

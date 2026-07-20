@@ -4,6 +4,11 @@ event_logs = []
 incidents = []
 transits = []
 
+def reset():
+    event_logs.clear()
+    incidents.clear()
+    transits.clear()
+
 def load_incidents():
     global incident_variants
 
@@ -12,15 +17,15 @@ def load_incidents():
 
     incident_variants = config["incident_variants"]
 
-def load_settings():
-    global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight
-    global select_unassigned_incident_chance, select_new_incident_chance, fav_outcome_chance, sla_multiplier, potential_fraud_chance, providers, priorities, high_priority_threshold, hand_over_chance, base_clarify_chance
-
+def load_preferences():
     with open("config/preferences.yaml", "r") as file:
         config = yaml.safe_load(file)
-    
-    settings = config["settings"]
-    probabilities = config["probabilities"]
+
+    return config["settings"], config["probabilities"]
+
+def apply_preferences(settings, probabilities):
+    global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight
+    global select_unassigned_incident_chance, select_new_incident_chance, fav_outcome_chance, sla_multiplier, potential_fraud_chance, providers, priorities, high_priority_threshold, hand_over_chance, base_clarify_chance
 
     start_date = settings["start_date"]
     start_datetime = datetime.datetime(
@@ -33,8 +38,7 @@ def load_settings():
     simulation_days = settings["simulation_days"]
     work_day_start = settings["work_day"]["start"]
     work_day_end = settings["work_day"]["end"]
-    employee_count =  settings["employee_count"]
-    simulation_days = settings["simulation_days"]
+    employee_count = settings["employee_count"]
     transaction_window = settings["transaction_date_window"]
     employee_timeout = settings["employee_timeout"]
     employee_work_session = settings["employee_work_session"]
@@ -54,3 +58,8 @@ def load_settings():
     incident_resolution_sessions_weight = probabilities["incident_resolution_sessions_weight"]
 
     return simulation_days, employee_count
+
+def load_and_apply_preferences():
+    settings, probabilities = load_preferences()
+
+    return apply_preferences(settings, probabilities)

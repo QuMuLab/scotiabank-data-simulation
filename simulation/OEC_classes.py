@@ -62,6 +62,10 @@ unassigned_queue = []
 
 fake = Faker('en_CA')
 
+def reset_classes():
+    incident_numbers.clear()
+    unassigned_queue.clear()
+
 def simulation_datetime(env_hour: float) -> datetime.datetime:
     return config.start_datetime + datetime.timedelta(hours = env_hour)
 
@@ -299,7 +303,7 @@ class Employee(object):
         incident.clarify_incident()
 
         wait_time = random.uniform(
-            config.employee_clarify_wait["minumum"], 
+            config.employee_clarify_wait["minimum"], 
             config.employee_clarify_wait["maximum"]
         )
         wait_time = min(wait_time, max(incident.time_remaining_hours(), 0.1))
