@@ -1,0 +1,46 @@
+settings:
+  start_date:
+    day: 11
+    month: 6
+    year: 2026
+  simulation_days: 1095
+  work_day:
+    start: 8
+    end: 16
+  employee_count: 25
+  transaction_date_window: 14
+  employee_timeout:
+    minimum: 0.33
+    maximum: 3
+  employee_work_session:
+    minimum: 0.25
+    maximum: 2
+  employee_work_break: 4
+  employee_clarification_wait:
+    minumum: 1
+    maximum: 24
+
+probabilities:
+  select_unassigned_incident_chance: 0.4
+  select_new_incident_chance: 0.5
+  favourable_outcome_chance: 0.7
+  sla_multiplier: 1
+  potential_fraud_chance: 0.25
+  providers:
+    TSYS:
+      weight: 0.65
+    NOT_APPLICABLE:
+      weight: 0.3
+    FDR:
+      weight: 0.05
+  priorities:
+    High:
+      weight: 0.33
+    Medium:
+      weight: 0.33
+    Low:
+      weight: 0.33
+  incident_high_priority_threshold: 0.25
+  hand_over_chance: 0.7
+  base_clarification_chance: 0.1
+  incident_resolution_sessions_weight: 0.15

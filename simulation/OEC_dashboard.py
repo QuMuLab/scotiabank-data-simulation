@@ -1,8 +1,8 @@
+import OEC_config as config
+
 from dash import Dash, html, dcc, Output, Input, State, ctx, no_update
 from dash.exceptions import PreventUpdate
 import pandas as pd
-
-import OEC_config as config
 
 MAX_HOUR = config.simulation_days * 24
 TICK_MS = 300
@@ -267,6 +267,7 @@ def build_dashboard(df: pd.DataFrame) -> Dash:
         if ctx.triggered_id == "time-slider":
             if slider_value == current_hour:
                 raise PreventUpdate
+            
             return slider_value, no_update, True
 
         new_hour = min(current_hour + (speed or 1), MAX_HOUR)

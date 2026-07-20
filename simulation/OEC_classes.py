@@ -1,5 +1,5 @@
 import OEC_config as config
-from OEC_config import event_logs, incidents, transits
+
 import string, simpy, random, datetime, itertools
 from faker import Faker
 
@@ -130,7 +130,7 @@ class Employee(object):
             if wait:
                 yield self.env.timeout(wait)
 
-            yield self.env.timeout(random.uniform(1/3, 3))
+            yield self.env.timeout(random.uniform(config.employee_timeout["minimum"], config.employee_timeout["maximum"]))
 
             if hours_until_work(self.env.now) > 0:
                 continue
@@ -159,7 +159,7 @@ class Employee(object):
 
             return incident
 
-        if unassigned_queue and random.random() < 0.4:
+        if unassigned_queue and random.random() < config.select_unassigned_incident_chance:
             unassigned_queue.sort(key = lambda inc: inc.time_remaining_hours())
 
             incident = unassigned_queue[0]
@@ -174,7 +174,7 @@ class Employee(object):
         if incident is None:
             return None
 
-        if random.random() < 0.5:
+        if random.random() < config.select_new_incident_chance:
             return incident
 
         unassigned_queue.append(incident)
@@ -244,11 +244,18 @@ class Employee(object):
 
                 incident.access_incident()
 
-        response_type = random.choices(["Favorable", "Unfavorable"], weights = [0.7, 0.3], k = 1)[0]
+        response_type = random.choices(
+            ["Favorable", "Unfavorable"], 
+            weights = [config.fav_outcome_chance, 1 - config.fav_outcome_chance], 
+            k = 1
+        )[0]
         yield self.env.process(incident.close_incident(response_type))
 
     def work_session(self, incident: Incident):
-        duration = random.uniform(0.25, 2.0)
+        duration = random.uniform(
+            config.employee_work_session["minimum"],
+            config.employee_work_session["maximum"]
+        )
         duration = min(duration, max(incident.time_remaining_hours(), 0.05))
         incident.work_sessions += 1
 
@@ -260,7 +267,7 @@ class Employee(object):
         if remaining <= 0:
             return 0
 
-        max_break = min(remaining * 0.5, 4)
+        max_break = min(remaining * 0.5, config.employee_work_break)
         if max_break <= 0:
             return 0
 
@@ -273,7 +280,7 @@ class Employee(object):
         if incident.time_remaining_hours() <= required_buffer:
             return False
 
-        handoff_chance = min(break_duration / 8, 0.7)
+        handoff_chance = min(break_duration / 8, config.hand_over_chance)
         return random.random() < handoff_chance
 
     def handoff_incident(self, incident: Incident):
@@ -282,7 +289,7 @@ class Employee(object):
         unassigned_queue.append(incident)
 
     def maybe_request_clarification(self, incident: Incident) -> bool:
-        base_odds = 0.1
+        base_odds = config.base_clarify_chance
         odds = max(base_odds * (0.4 ** incident.clarification_count), 0.01)
 
         return random.random() < odds
@@ -291,13 +298,16 @@ class Employee(object):
         incident.clarification_count += 1
         incident.clarify_incident()
 
-        wait_time = random.uniform(1, 24)
+        wait_time = random.uniform(
+            config.employee_clarify_wait["minumum"], 
+            config.employee_clarify_wait["maximum"]
+        )
         wait_time = min(wait_time, max(incident.time_remaining_hours(), 0.1))
 
         yield from business_hours_timeout(self.env, wait_time)
 
     def is_incident_resolved(self, incident: Incident) -> bool:
-        completion_chance = min(0.2 + incident.work_sessions * 0.15, 0.9)
+        completion_chance = min(0.2 + incident.work_sessions * config.incident_resolution_sessions_weight, 0.9)
 
         return random.random() < completion_chance
 
@@ -321,7 +331,7 @@ class Incident(object):
         self.incident_itemno = self.generate_incident_number()
         self.incident_type = incident_type
         self.current_employee = employee
-        self.service_level_agreement = service_level_agreement
+        self.service_level_agreement = service_level_agreement * config.sla_multiplier
 
         self.category = category
         self.subcategory = subcategory
@@ -336,7 +346,7 @@ class Incident(object):
         self.work_sessions = 0
         self.clarification_count = 0
 
-        incidents.append(self)
+        config.incidents.append(self)
         self.env.process(self.create_incident())
 
     def generate_incident_number(self):
@@ -357,6 +367,8 @@ class Incident(object):
             "Female" : [fake.first_name_female(), fake.last_name_female()]
         }
 
+        phone_numbers = [fake.msisdn() for _ in range(3)]
+
         field_value_map = {
             "incidenttype" : self.incident_type,
             "bnscustomer" : "Yes",
@@ -376,9 +388,9 @@ class Incident(object):
             "customeraddress" : fake.street_address(), 
             "customercity" : fake.city(), 
             "customeremail" : fake.email(), 
-            "customerbphoneno" : f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}", 
-            "customerhphoneno" : f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}", 
-            "customercphoneno" : f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}"
+            "customerbphoneno" : f"{phone_numbers[0][:3]}-{phone_numbers[0][3:6]}-{phone_numbers[0][6:10]}", 
+            "customerhphoneno" : f"{phone_numbers[1][:3]}-{phone_numbers[1][3:6]}-{phone_numbers[1][6:10]}", 
+            "customercphoneno" : f"{phone_numbers[2][:3]}-{phone_numbers[2][3:6]}-{phone_numbers[2][6:10]}"
         }
 
         for field in starting_fields:
@@ -387,26 +399,38 @@ class Incident(object):
 
             self.edit_field(description, field, newval, None)
 
+        provider_types = list(config.providers.keys())
+        provider_weights = [
+            config.providers[provider_type]["weight"]
+            for provider_type in provider_types
+        ]
+
+        priority_types = list(config.priorities.keys())
+        priority_weights = [
+            config.priorities[priority_type]["weight"]
+            for priority_type in priority_types
+        ]
+
         field_value_map = {
-            "acc_transit" : random.choice(transits),
+            "acc_transit" : random.choice(config.transits),
             "category" : self.category,
             "account_no" : fake.bban()[4:],
             "account_type" : None,
             "subcategory" :  self.subcategory,
             "description" : self.description_two,
-            "provider" : random.choices(["TSYS", "NOT_APPLICABLE", "FDR"], weights = [0.65, 0.3, 0.05], k = 1)[0],
+            "provider" : random.choices(provider_types, weights = provider_weights, k = 1)[0],
             "vttransitnames" : None,
             "account_status" : None,
             "fees" : "Waive",
             "amountclaimed" : None,
             "transit" : None,
             "chargefees" : 0,
-            "potentialfraudfo" : random.choices(["Yes", "No"], weights = [0.25, 0.75], k = 1)[0],
+            "potentialfraudfo" : random.choices(["Yes", "No"], weights = [config.potential_fraud_chance, 1 - config.potential_fraud_chance], k = 1)[0],
             "prodchannel" : self.prod_channel,
-            "transactiondate" : (config.start_datetime - datetime.timedelta(days = random.randint(0, 14))).date(),
+            "transactiondate" : (config.start_datetime - datetime.timedelta(days = random.randint(0, config.transaction_window))).date(),
             "producttype" : self.product_type,
             "complainttype" : self.complaint_type,
-            "priority" : random.choice(["High", "Medium", "Low"])
+            "priority" : random.choices(priority_types, weights = priority_weights, k = 1)[0]
         }
 
         for field in additional_fields[self.incident_type]:
@@ -436,16 +460,22 @@ class Incident(object):
     def time_remaining_hours(self) -> float:
         sla_total_hours = self.service_level_agreement * 24
         elapsed = self.env.now - self.created_at
+
         return sla_total_hours - elapsed
 
-    def is_high_priority(self, threshold: float = 0.25) -> bool:
+    def is_high_priority(self, threshold: float = None) -> bool:
+        if threshold is None:
+            threshold = config.high_priority_threshold
+
         sla_total_hours = self.service_level_agreement * 24
+
         if sla_total_hours <= 0:
             return True
+        
         return self.time_remaining_hours() <= sla_total_hours * threshold
 
     def log_action(self, action_type: str, description = None, field = None, newval = None, prevval = None):
-        event_logs.append({
+        config.event_logs.append({
             "incident_itemno" : self.incident_itemno,
             "action" : action_type,
             "description" : description,

@@ -1,26 +1,3 @@
-settings:
-  start_date:
-    day: 11
-    month: 6
-    year: 2026
-  simulation_days: 1095
-  work_day:
-    start: 8
-    end: 16
-  employee_count: 25
-  transit_cities:
-  - Toronto
-  - Kingston
-  - Montreal
-  - Ottawa
-  - Vancouver
-  - Calgary
-  - Edmonton
-  - Quebec City
-  - Winnipeg
-  - Halifax
-  - Moncton
-
 incident_variants:
   Claims:
     weight: 0.4
