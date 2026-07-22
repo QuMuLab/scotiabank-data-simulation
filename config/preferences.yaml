@@ -26,21 +26,49 @@ probabilities:
   favourable_outcome_chance: 0.7
   sla_multiplier: 1
   potential_fraud_chance: 0.25
-  providers:
-    TSYS:
-      weight: 0.65
-    NOT_APPLICABLE:
-      weight: 0.3
-    FDR:
-      weight: 0.05
-  priorities:
-    High:
-      weight: 0.33
-    Medium:
-      weight: 0.33
-    Low:
-      weight: 0.33
   incident_high_priority_threshold: 0.25
   hand_over_chance: 0.7
   base_clarification_chance: 0.1
   incident_resolution_sessions_weight: 0.15
+
+weights:
+  providers:
+    TSYS: 0.65
+    NOT_APPLICABLE: 0.3
+    FDR: 0.05
+  priorities:
+    High: 0.25
+    Medium: 0.5
+    Low: 0.25
+  reception_channels:
+    Branch: 0.125
+    Complaints Book: 0.02
+    Contact Center Email: 0.02
+    Contact Center Phone: 0.02
+    Contact Center Social Media: 0.02
+    Customer Care: 0.02
+    Email: 0.125
+    Phone Call: 0.6
+    Formal Complaint: 0.02
+    Web page (Complaints): 0.03
+  missing_fields:
+  root_causes: 
+    Claims: 
+      Procedure / Process: 0.55
+      System: 0.3
+      Fraud: 0.1
+      Behaviour: 0.035
+      ABM / ATM: 0.015
+    Requests:
+      Procedure / Process: 0.7
+      Fraud: 0.125
+      Behaviour: 0.125
+      Suitability: 0.035
+      System: 0.015
+    Complaints:
+      Procedure / Process: 0.65
+      System: 0.085
+      Behaviour: 0.085
+      Service Issues: 0.07
+      Miscommunication / Misunderstanding: 0.055
+      Unfounded: 0.055

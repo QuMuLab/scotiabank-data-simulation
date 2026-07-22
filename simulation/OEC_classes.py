@@ -62,7 +62,7 @@ unassigned_queue = []
 
 fake = Faker('en_CA')
 
-def reset_classes():
+def reset():
     incident_numbers.clear()
     unassigned_queue.clear()
 
@@ -121,9 +121,9 @@ def business_hours_timeout(env: simpy.Environment, duration: float):
 class Employee(object):
     incident_variants = None
 
-    def __init__(self, env: simpy.Environment, username: str):
+    def __init__(self, env: simpy.Environment):
         self.env = env
-        self.username = username
+        self.username = f"{fake.first_name()} {fake.last_name()}"
         self.current_incident = None
 
         self.env.process(self.run())
@@ -349,6 +349,7 @@ class Incident(object):
         self.event_sequence = itertools.count()
         self.work_sessions = 0
         self.clarification_count = 0
+        self.incorrect_or_missing_fields = []
 
         config.incidents.append(self)
         self.env.process(self.create_incident())
@@ -373,13 +374,16 @@ class Incident(object):
 
         phone_numbers = [fake.msisdn() for _ in range(3)]
 
+        reception_channels = list(config.reception_channels.keys())
+        reception_channel_weights = [
+            config.reception_channels[reception_channel]
+            for reception_channel in reception_channels
+        ]
+
         field_value_map = {
             "incidenttype" : self.incident_type,
             "bnscustomer" : "Yes",
-            "receptionchannel" : random.choice([
-                "Branch", "Complaints Book", "Contact Center Email", "Contact Center Phone", "Contact Center Social Media",
-                "Customer Care", "Email", "Phone Call", "Formal Complaint (Legal, Regulatory, etc)", "Web page (complaints)"
-                ]),
+            "receptionchannel" : random.choices(reception_channels, weights = reception_channel_weights, k = 1)[0], 
             "customertype" : None, 
             "customername" : gender_name_map[gender][0], 
             "customerlastname" : gender_name_map[gender][1], 
@@ -405,13 +409,13 @@ class Incident(object):
 
         provider_types = list(config.providers.keys())
         provider_weights = [
-            config.providers[provider_type]["weight"]
+            config.providers[provider_type]
             for provider_type in provider_types
         ]
 
         priority_types = list(config.priorities.keys())
         priority_weights = [
-            config.priorities[priority_type]["weight"]
+            config.priorities[priority_type]
             for priority_type in priority_types
         ]
 
@@ -455,8 +459,15 @@ class Incident(object):
     def close_incident(self, response_type):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
 
+        root_causes = list(config.root_causes[self.incident_type].keys())
+        root_cause_weights = [
+            config.root_causes[root_cause]
+            for root_cause in root_causes
+        ]
+
         self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)
         self.log_action("Field Edited", "RESPONSE TO CUSTOMER", "customerreponse")
+        self.log_action("Field Edited", "ROOT CAUSE", "rootcause", random.choices(root_causes, weights = root_cause_weights, k = 1)[0])
         self.log_action("Closed")
 
         self.current_employee.current_incident = None

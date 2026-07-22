@@ -66,8 +66,8 @@ def build_settings_fields(settings: dict) -> html.Div:
             html.Div(
                 [
                     html.Label("Employee Timeout (Hours, Min - Max)"),
-                    dcc.Input(id = "setting-timeout-min", type = "number", value = settings["employee_timeout"]["minimum"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-timeout-max", type = "number", value = settings["employee_timeout"]["maximum"], step = 0.01, style = {"width": "80px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-timeout-min", type = "number", value = settings["employee_timeout"]["minimum"], step = "any", style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-timeout-max", type = "number", value = settings["employee_timeout"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"}),
                 ],
                 style = {"marginBottom": "12px"},
             ),
@@ -75,8 +75,8 @@ def build_settings_fields(settings: dict) -> html.Div:
             html.Div(
                 [
                     html.Label("Employee Work Session (Hours, Min - Max)"),
-                    dcc.Input(id = "setting-session-min", type = "number", value = settings["employee_work_session"]["minimum"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-session-max", type = "number", value = settings["employee_work_session"]["maximum"], step = 0.01, style = {"width": "80px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-session-min", type = "number", value = settings["employee_work_session"]["minimum"], step = "any", style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-session-max", type = "number", value = settings["employee_work_session"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"}),
                 ],
                 style = {"marginBottom": "12px"},
             ),
@@ -84,7 +84,7 @@ def build_settings_fields(settings: dict) -> html.Div:
             html.Div(
                 [
                     html.Label("Employee Work Break (Hours)"),
-                    dcc.Input(id = "setting-work-break", type = "number", value = settings["employee_work_break"], step = 0.1, style = {"width": "100px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-work-break", type = "number", value = settings["employee_work_break"], step = "any", style = {"width": "100px", "marginLeft": "8px"}),
                 ],
                 style = {"marginBottom": "12px"},
             ),
@@ -92,8 +92,8 @@ def build_settings_fields(settings: dict) -> html.Div:
             html.Div(
                 [
                     html.Label("Employee Clarification Wait (Hours, Min - Max)"),
-                    dcc.Input(id = "setting-clarify-min", type = "number", value = settings["employee_clarification_wait"]["minimum"], step = 0.1, style = {"width": "80px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-clarify-max", type = "number", value = settings["employee_clarification_wait"]["maximum"], step = 0.1, style = {"width": "80px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-clarify-min", type = "number", value = settings["employee_clarification_wait"]["minimum"], step = "any", style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-clarify-max", type = "number", value = settings["employee_clarification_wait"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"}),
                 ],
                 style = {"marginBottom": "12px"},
             ),
@@ -103,17 +103,17 @@ def build_settings_fields(settings: dict) -> html.Div:
 def build_weighted_options_fields(section_id: str, label: str, options: dict) -> html.Div:
     rows = []
 
-    for option_name, option_data in options.items():
+    for option_name, option_weight in options.items():
         rows.append(
             html.Div(
                 [
-                    html.Label(option_name, style = {"width": "160px", "display": "inline-block"}),
+                    html.Label(option_name),
                     dcc.Input(
                         id = {"type": section_id, "index": option_name},
                         type = "number",
-                        value = option_data["weight"],
-                        step = 0.01,
-                        style = {"width": "80px"},
+                        value = option_weight,
+                        step = "any",
+                        style = {"width": "80px", "marginLeft": "6px"},
                     ),
                 ],
                 style = {"marginBottom": "6px"},
@@ -123,18 +123,55 @@ def build_weighted_options_fields(section_id: str, label: str, options: dict) ->
     return html.Div(
         [
             html.Label(label, style = {"fontWeight": "bold"}),
-            html.Div(rows, style = {"marginTop": "6px", "marginLeft": "8px"}),
+            html.Div(rows, style = {"marginTop": "6px"}),
         ],
         style = {"marginBottom": "12px"},
     )
 
-def build_weighted_sections(probabilities: dict) -> html.Div:
+def build_weighted_sections(weights: dict) -> html.Div:
     return html.Div(
         [
-            html.H4("Providers & Priorities"),
-            build_weighted_options_fields("prob-provider-weight", "Providers", probabilities["providers"]),
-            build_weighted_options_fields("prob-priority-weight", "Priorities", probabilities["priorities"]),
-        ]
+            html.H4("Weights"),
+
+            html.Div(
+                [
+                    build_weighted_options_fields(
+                        "prob-reception-weight",
+                        "Reception Channels",
+                        weights["reception_channels"]
+                    ),
+
+                    html.Div(
+                        [
+                            build_weighted_options_fields(
+                                "prob-provider-weight",
+                                "Providers",
+                                weights["providers"]
+                            ),
+                            build_weighted_options_fields(
+                                "prob-priority-weight",
+                                "Priorities",
+                                weights["priorities"]
+                            ),
+                        ],
+                        style = {
+                            "display": "flex",
+                            "flexDirection": "column",
+                            "gap": "5px",
+                        }
+                    ),
+                ],
+                style = {
+                    "display": "flex",
+                    "flexWrap": "wrap",
+                    "gap": "40px",
+                },
+            ),
+        ],
+        style = {
+            "width": "100%",
+            "marginTop": "24px",
+        },
     )
 
 def build_probabilities_fields(probabilities: dict) -> html.Div:
@@ -145,100 +182,102 @@ def build_probabilities_fields(probabilities: dict) -> html.Div:
             html.Div(
                 [
                     html.Label("Select Unassigned Incident Chance"),
-                    dcc.Input(id = "prob-select-unassigned", type = "number", value = probabilities["select_unassigned_incident_chance"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-select-unassigned", type = "number", value = probabilities["select_unassigned_incident_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Select New Incident Chance"),
-                    dcc.Input(id = "prob-select-new", type = "number", value = probabilities["select_new_incident_chance"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-select-new", type = "number", value = probabilities["select_new_incident_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Favourable Outcome Chance"),
-                    dcc.Input(id = "prob-fav-outcome", type = "number", value = probabilities["favourable_outcome_chance"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-fav-outcome", type = "number", value = probabilities["favourable_outcome_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("SLA Multiplier"),
-                    dcc.Input(id = "prob-sla-multiplier", type = "number", value = probabilities["sla_multiplier"], step = 0.1, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-sla-multiplier", type = "number", value = probabilities["sla_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Potential Fraud Chance"),
-                    dcc.Input(id = "prob-potential-fraud", type = "number", value = probabilities["potential_fraud_chance"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-potential-fraud", type = "number", value = probabilities["potential_fraud_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Incident High Priority Threshold"),
-                    dcc.Input(id = "prob-high-priority-threshold", type = "number", value = probabilities["incident_high_priority_threshold"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-high-priority-threshold", type = "number", value = probabilities["incident_high_priority_threshold"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Hand Over Chance"),
-                    dcc.Input(id = "prob-hand-over", type = "number", value = probabilities["hand_over_chance"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-hand-over", type = "number", value = probabilities["hand_over_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Base Clarification Chance"),
-                    dcc.Input(id = "prob-base-clarification", type = "number", value = probabilities["base_clarification_chance"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-base-clarification", type = "number", value = probabilities["base_clarification_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Incident Resolution Sessions Weight"),
-                    dcc.Input(id = "prob-resolution-sessions-weight", type = "number", value = probabilities["incident_resolution_sessions_weight"], step = 0.01, style = {"width": "80px", "marginLeft": "8px"}),
+                    dcc.Input(id = "prob-resolution-sessions-weight", type = "number", value = probabilities["incident_resolution_sessions_weight"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
-            ),
+                style = {"marginBottom": "12px"}
+            )
         ]
     )
 
 def build_setup_view() -> html.Div:
-    settings, probabilities = config.load_preferences()
+    settings, probabilities, weights = config.load_preferences()
 
     return html.Div(
         [
             html.H2("OEC Simulation Setup"),
+            html.Button("Run Simulation", id = "run-simulation-btn", n_clicks = 0),
             html.Div(
                 [
-                    html.Div(build_settings_fields(settings), style = {"flex": "1", "minWidth": "300px"}),
-                    html.Div(build_probabilities_fields(probabilities), style = {"flex": "1", "minWidth": "300px"}),
-                    html.Div(build_weighted_sections(probabilities), style = {"flex": "1", "minWidth": "300px"}),
+                    html.Div(build_settings_fields(settings)),
+                    html.Div(build_probabilities_fields(probabilities))
                 ],
-                style = {"display": "flex", "flexWrap": "wrap", "gap": "32px"},
+                style = {"display": "flex", "flexWrap": "wrap", "gap": "40px"}
             ),
-            html.Button("Run Simulation", id = "run-simulation-btn", n_clicks = 0, style = {"marginTop": "24px"}),
+            html.Div(
+                build_weighted_sections(weights)
+            )
         ],
-        style = {"fontFamily": "Arial, sans-serif", "margin": "24px"},
+        style = {"fontFamily": "Arial, sans-serif", "margin": "24px"}
     )
 
 def build_loading_view() -> html.Div:
     return html.Div(
         html.H3("Running simulation..."),
-        style = {"fontFamily": "Arial, sans-serif", "margin": "24px", "textAlign": "center"},
+        style = {"fontFamily": "Arial, sans-serif", "margin": "24px", "textAlign": "center"}
     )
 
 def prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -407,7 +446,7 @@ def build_results_view() -> html.Div:
                     html.Button("Play", id = "play-btn", n_clicks = 0),
                     html.Button("Pause", id = "pause-btn", n_clicks = 0),
                     html.Label("Speed (Hours):", style = {"marginLeft": "24px"}),
-                    dcc.Input(id = "speed-input", type = "number", value = 4, min = 0.1, step = 0.1, style = {"width": "70px", "marginLeft": "8px"}),
+                    dcc.Input(id = "speed-input", type = "number", value = 4, min = 0.1, step = "any", style = {"width": "70px", "marginLeft": "8px"}),
                     html.Span(id = "timestamp-display", style = {"marginLeft": "32px", "fontWeight": "bold"}),
                 ],
                 style = {"display": "flex", "alignItems": "center", "marginBottom": "16px"},
@@ -544,7 +583,9 @@ def build_app() -> Dash:
         State({"type": "prob-provider-weight", "index": ALL}, "id"),
         State({"type": "prob-priority-weight", "index": ALL}, "value"),
         State({"type": "prob-priority-weight", "index": ALL}, "id"),
-        prevent_initial_call = True,
+        State({"type": "prob-reception-weight", "index": ALL}, "value"),
+        State({"type": "prob-reception-weight", "index": ALL}, "id"),
+        prevent_initial_call = True
     )
     def run_and_render(
         _n_intervals,
@@ -563,9 +604,10 @@ def build_app() -> Dash:
         base_clarification, resolution_sessions_weight,
         provider_weights, provider_ids,
         priority_weights, priority_ids,
+        reception_weights, reception_ids
     ):
         
-        if simulation_state.get("running"):
+        if _n_intervals != 1 or simulation_state.get("running"):
             raise PreventUpdate
 
         simulation_state["running"] = True
@@ -583,26 +625,33 @@ def build_app() -> Dash:
                 "employee_clarification_wait": {"minimum": clarify_min, "maximum": clarify_max},
             }
 
-            providers = {item["index"]: {"weight": weight} for item, weight in zip(provider_ids, provider_weights)}
-            priorities = {item["index"]: {"weight": weight} for item, weight in zip(priority_ids, priority_weights)}
-
             probabilities = {
                 "select_unassigned_incident_chance": select_unassigned,
                 "select_new_incident_chance": select_new,
                 "favourable_outcome_chance": fav_outcome,
                 "sla_multiplier": sla_multiplier_value,
                 "potential_fraud_chance": potential_fraud,
-                "providers": providers,
-                "priorities": priorities,
                 "incident_high_priority_threshold": high_priority_threshold_value,
                 "hand_over_chance": hand_over,
                 "base_clarification_chance": base_clarification,
-                "incident_resolution_sessions_weight": resolution_sessions_weight,
+                "incident_resolution_sessions_weight": resolution_sessions_weight
             }
 
-            simulation_days, employee_count = config.apply_preferences(settings, probabilities)
+            providers = {item["index"]: weight for item, weight in zip(provider_ids, provider_weights)}
+            priorities = {item["index"]: weight for item, weight in zip(priority_ids, priority_weights)}
+            receptions = {item["index"]: weight for item, weight in zip(reception_ids, reception_weights)}
+            root_causes = None
 
-            df = run_simulation(employee_count)
+            weights = {
+                "providers": providers,
+                "priorities": priorities,
+                "reception_channels": receptions,
+                "root_causes" : root_causes
+            }
+
+            simulation_days, employee_count = config.apply_preferences(settings, probabilities, weights)
+
+            df = run_simulation(employee_count, app.server.logger)
             max_hour = simulation_days * 24
 
             simulation_state["df"] = prepare_dataframe(df)

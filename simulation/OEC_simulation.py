@@ -1,33 +1,50 @@
 import OEC_config as config
-from OEC_classes import Employee, reset_classes
+import OEC_classes as classes
 
-import simpy, random, string, pandas as pd
-from faker import Faker
+import simpy, logging, random, string, pandas as pd
 
-# TODO:
-# Dashboard to edit yaml
-# Incident view incorrect times, add years to dates
+""""
+Expose incident_type and root_cause weights to dashboard
 
-# Incident Creation: customer type, cif, account type, account status, amount claimed, fees, charge fees, fraud, priority rows
+Non critical fields (missing or incorrect fields) -> clarifications
 
-# Product Type column
+Incident view incorrect times, add years to dates
 
-# Incident End: Fraud resolution, customer satisfaction, reimbursement, root cause rows
+====
 
-fake = Faker('en_CA')
+1. More actions (Access Control (More variation), Clarification, Field Edited)
+
+2. Hand offs
+
+3. Fraud chance formula + fraud chance effects fraud root cause
+
+4. Response type formula
+
+5. Clean up the HTML
+
+6. More events / branches, outliers, noise
+
+7. Product Type, Account type
+
+8. Incident Creation: customer type, cif, account type, account status, amount claimed, fees, charge fees, fraud, priority rows
+
+9. Incident End: Fraud resolution, customer satisfaction, reimbursement rows
+"""
 
 def generate_employees(count: int, env: simpy.Environment):
     for _ in range(count):
-        Employee(env, f"{fake.first_name()} {fake.last_name()}")
+        classes.Employee(env)
 
 def generate_transits():
     for city in ["Toronto", "Kingston", "Montreal", "Ottawa", "Vancouver", "Calgary", "Edmonton", "Quebec City", "Winnipeg", "Halifax", "Moncton"]:
         transit_number = "".join(random.choices(string.digits, k = 5))
         config.transits.append(f"{transit_number} {city}")
 
-def run_simulation(employee_count: int) -> pd.DataFrame:
+def run_simulation(employee_count: int, logger: logging.Logger) -> pd.DataFrame:
+    logger.info("Running Simulation...")
+
     config.reset()
-    reset_classes()
+    classes.reset()
 
     env = simpy.Environment()
 
@@ -42,6 +59,7 @@ def run_simulation(employee_count: int) -> pd.DataFrame:
     csv_df = df[df["action"] != "Handoff"]
     csv_df.to_csv("OEC_simulation_results.csv", index = False)
 
+    logger.info("Simulation Complete")
     return df
 
 if __name__ == "__main__":
