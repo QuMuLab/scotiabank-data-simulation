@@ -26,7 +26,7 @@ def load_preferences():
 def apply_preferences(settings, probabilities, weights):
     global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight
     global select_unassigned_incident_chance, select_new_incident_chance, fav_outcome_chance, sla_multiplier, potential_fraud_chance, high_priority_threshold, hand_over_chance, base_clarify_chance
-    global providers, priorities, reception_channels, root_causes
+    global providers, priorities, reception_channels, missing_fields, root_causes, clarification_reasons
 
     start_date = settings["start_date"]
     start_datetime = datetime.datetime(
@@ -59,7 +59,9 @@ def apply_preferences(settings, probabilities, weights):
     providers = weights["providers"]
     priorities = weights["priorities"]
     reception_channels = weights["reception_channels"]
+    missing_fields = weights["missing_fields"]
     root_causes = weights["root_causes"]
+    clarification_reasons = weights["clarification_reasons"]
 
     return simulation_days, employee_count
 

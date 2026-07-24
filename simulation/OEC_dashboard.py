@@ -4,6 +4,7 @@ from OEC_simulation import run_simulation
 from dash import Dash, html, dcc, Output, Input, State, ctx, no_update, ALL
 from dash.exceptions import PreventUpdate
 import pandas as pd
+import logging
 
 TICK_MS = 300
 simulation_state = {}
@@ -139,6 +140,27 @@ def build_weighted_sections(weights: dict) -> html.Div:
                         "prob-reception-weight",
                         "Reception Channels",
                         weights["reception_channels"]
+                    ),
+
+                    html.Div(
+                        [
+                            build_weighted_options_fields(
+                                "prob-missing-fields-weight",
+                                "Missing Fields",
+                                weights["missing_fields"]
+                            ),
+
+                            build_weighted_options_fields(
+                                "prob-clarification-reasons-weight",
+                                "Clarification Reasons",
+                                weights["clarification_reasons"]
+                            ),
+                        ],
+                        style = {
+                            "display": "flex",
+                            "flexDirection": "column",
+                            "gap": "5px",
+                        }
                     ),
 
                     html.Div(
@@ -332,7 +354,7 @@ def build_slider_marks(max_hour: float, target_marks: int = 8) -> dict:
     }
 
 def format_hour(hour: float) -> str:
-    return (config.start_datetime + pd.Timedelta(hours = hour)).strftime("%b %d, %H:%M")
+    return (config.start_datetime + pd.Timedelta(hours = hour)).strftime("%b %d, %H:%M:%Y")
 
 def incident_summary_text(df: pd.DataFrame, incident_itemno: str) -> str:
     rows = df[df["incident_itemno"] == incident_itemno]
@@ -585,6 +607,10 @@ def build_app() -> Dash:
         State({"type": "prob-priority-weight", "index": ALL}, "id"),
         State({"type": "prob-reception-weight", "index": ALL}, "value"),
         State({"type": "prob-reception-weight", "index": ALL}, "id"),
+        State({"type": "prob-missing-fields-weight", "index": ALL}, "value"),
+        State({"type": "prob-missing-fields-weight", "index": ALL}, "id"),
+        State({"type": "prob-clarification-reasons-weight", "index": ALL}, "value"),
+        State({"type": "prob-clarification-reasons-weight", "index": ALL}, "id"),
         prevent_initial_call = True
     )
     def run_and_render(
@@ -604,7 +630,9 @@ def build_app() -> Dash:
         base_clarification, resolution_sessions_weight,
         provider_weights, provider_ids,
         priority_weights, priority_ids,
-        reception_weights, reception_ids
+        reception_weights, reception_ids,
+        missing_fields_weights, missing_fields_ids,
+        clarification_reasons_weights, clarification_reasons_ids
     ):
         
         if _n_intervals != 1 or simulation_state.get("running"):
@@ -640,18 +668,21 @@ def build_app() -> Dash:
             providers = {item["index"]: weight for item, weight in zip(provider_ids, provider_weights)}
             priorities = {item["index"]: weight for item, weight in zip(priority_ids, priority_weights)}
             receptions = {item["index"]: weight for item, weight in zip(reception_ids, reception_weights)}
-            root_causes = None
+            missing_fields = {item["index"]: weight for item, weight in zip(missing_fields_ids, missing_fields_weights)}
+            clarification_reasons = {item["index"]: weight for item, weight in zip(clarification_reasons_ids, clarification_reasons_weights)}
 
             weights = {
                 "providers": providers,
                 "priorities": priorities,
                 "reception_channels": receptions,
-                "root_causes" : root_causes
+                "missing_fields": missing_fields,
+                "root_causes": config.load_preferences()[2]["root_causes"],
+                "clarification_reasons": clarification_reasons
             }
 
             simulation_days, employee_count = config.apply_preferences(settings, probabilities, weights)
 
-            df = run_simulation(employee_count, app.server.logger)
+            df = run_simulation(employee_count, logging.getLogger("werkzeug"))
             max_hour = simulation_days * 24
 
             simulation_state["df"] = prepare_dataframe(df)

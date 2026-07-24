@@ -1,6 +1,6 @@
 incident_variants:
   Claims:
-    weight: 0.4
+    weight: 0.15
     variants:
     - category: Credit Card
       subcategory: International POS
@@ -291,7 +291,7 @@ incident_variants:
       description_two: Contract open s/b clsoed - Credit Card
       service_level_agreement: 12
   Complaints:
-    weight: 0.35
+    weight: 0.05
     variants:
     - complaint_type: Insurance
       complaint_description: Transaction not recognized - Scotia Vida
@@ -330,7 +330,7 @@ incident_variants:
       prod_channel: Small Business Banking
       service_level_agreement: 21
   Requests:
-    weight: 0.25
+    weight: 0.8
     variants:
     - category: Credit Card
       subcategory: Chargebacks

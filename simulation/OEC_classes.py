@@ -300,7 +300,7 @@ class Employee(object):
 
     def clarify(self, incident: Incident):
         incident.clarification_count += 1
-        incident.clarify_incident()
+        yield self.env.process(incident.clarify_incident())
 
         wait_time = random.uniform(
             config.employee_clarify_wait["minimum"], 
@@ -454,20 +454,33 @@ class Incident(object):
         self.log_action("Access Control")
 
     def clarify_incident(self):
+        clarification_reasons = list(config.clarification_reasons.keys())
+        clarification_reason_weights = list(config.clarification_reasons.values())
+
         self.log_action("Clarification")
+        yield self.env.timeout(0.5 / 3600)
+        self.log_action(
+            "Field Edited", 
+            "CLARIFICATION REASON", 
+            "clarification_reason", 
+            random.choices(clarification_reasons, weights = clarification_reason_weights, k = 1)[0]
+        )
 
     def close_incident(self, response_type):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
 
-        root_causes = list(config.root_causes[self.incident_type].keys())
-        root_cause_weights = [
-            config.root_causes[root_cause]
-            for root_cause in root_causes
-        ]
+        root_cause_map = config.root_causes[self.incident_type]
+        root_causes = list(root_cause_map.keys())
+        root_cause_weights = list(root_cause_map.values())
 
         self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)
         self.log_action("Field Edited", "RESPONSE TO CUSTOMER", "customerreponse")
-        self.log_action("Field Edited", "ROOT CAUSE", "rootcause", random.choices(root_causes, weights = root_cause_weights, k = 1)[0])
+        self.log_action(
+            "Field Edited", 
+            "ROOT CAUSE", 
+            "rootcause", 
+            random.choices(root_causes, weights = root_cause_weights, k = 1)[0]
+        )
         self.log_action("Closed")
 
         self.current_employee.current_incident = None
