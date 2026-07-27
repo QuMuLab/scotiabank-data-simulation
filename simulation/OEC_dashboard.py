@@ -129,7 +129,7 @@ def build_weighted_options_fields(section_id: str, label: str, options: dict) ->
         style = {"marginBottom": "12px"},
     )
 
-def build_weighted_sections(weights: dict) -> html.Div:
+def build_weighted_sections(weights: dict, incident_variants: dict) -> html.Div:
     return html.Div(
         [
             html.H4("Weights"),
@@ -182,6 +182,13 @@ def build_weighted_sections(weights: dict) -> html.Div:
                             "gap": "5px",
                         }
                     ),
+
+                    build_weighted_options_fields(
+                        "incident-type-weight",
+                        "Incident Types",
+                        {name: variant["weight"] for name, variant in incident_variants.items()}
+                    )
+
                 ],
                 style = {
                     "display": "flex",
@@ -277,6 +284,7 @@ def build_probabilities_fields(probabilities: dict) -> html.Div:
 
 def build_setup_view() -> html.Div:
     settings, probabilities, weights = config.load_preferences()
+    incident_variants = config.load_incidents()
 
     return html.Div(
         [
@@ -290,7 +298,7 @@ def build_setup_view() -> html.Div:
                 style = {"display": "flex", "flexWrap": "wrap", "gap": "40px"}
             ),
             html.Div(
-                build_weighted_sections(weights)
+                build_weighted_sections(weights, incident_variants)
             )
         ],
         style = {"fontFamily": "Arial, sans-serif", "margin": "24px"}
@@ -611,6 +619,8 @@ def build_app() -> Dash:
         State({"type": "prob-missing-fields-weight", "index": ALL}, "id"),
         State({"type": "prob-clarification-reasons-weight", "index": ALL}, "value"),
         State({"type": "prob-clarification-reasons-weight", "index": ALL}, "id"),
+        State({"type": "incident-type-weight", "index": ALL}, "value"),
+        State({"type": "incident-type-weight", "index": ALL}, "id"),
         prevent_initial_call = True
     )
     def run_and_render(
@@ -632,7 +642,8 @@ def build_app() -> Dash:
         priority_weights, priority_ids,
         reception_weights, reception_ids,
         missing_fields_weights, missing_fields_ids,
-        clarification_reasons_weights, clarification_reasons_ids
+        clarification_reasons_weights, clarification_reasons_ids,
+        incident_type_weights, incident_type_ids
     ):
         
         if _n_intervals != 1 or simulation_state.get("running"):
@@ -670,6 +681,7 @@ def build_app() -> Dash:
             receptions = {item["index"]: weight for item, weight in zip(reception_ids, reception_weights)}
             missing_fields = {item["index"]: weight for item, weight in zip(missing_fields_ids, missing_fields_weights)}
             clarification_reasons = {item["index"]: weight for item, weight in zip(clarification_reasons_ids, clarification_reasons_weights)}
+            incident_weights = {item["index"]: weight for item, weight in zip(incident_type_ids, incident_type_weights)}
 
             weights = {
                 "providers": providers,
@@ -681,6 +693,7 @@ def build_app() -> Dash:
             }
 
             simulation_days, employee_count = config.apply_preferences(settings, probabilities, weights)
+            config.apply_incidents(incident_weights)
 
             df = run_simulation(employee_count, logging.getLogger("werkzeug"))
             max_hour = simulation_days * 24

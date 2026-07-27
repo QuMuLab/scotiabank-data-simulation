@@ -4,7 +4,7 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-Expose incident_type, root_cause weights to dashboard
+Expose root_cause weights to dashboard
 
 Non critical fields (missing or incorrect fields) -> clarifications
 

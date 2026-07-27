@@ -14,14 +14,21 @@ def load_incidents():
 
     with open("config/incidents.yaml", "r") as file:
         config = yaml.safe_load(file)
-
     incident_variants = config["incident_variants"]
+    
+    return incident_variants
 
 def load_preferences():
     with open("config/preferences.yaml", "r") as file:
         config = yaml.safe_load(file)
 
     return config["settings"], config["probabilities"], config["weights"]
+
+def apply_incidents(incident_settings: dict):
+    for incident_type, weight in incident_settings.items():
+        incident_variants[incident_type]["weight"] = weight
+
+    return incident_variants
 
 def apply_preferences(settings, probabilities, weights):
     global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight
@@ -64,8 +71,3 @@ def apply_preferences(settings, probabilities, weights):
     clarification_reasons = weights["clarification_reasons"]
 
     return simulation_days, employee_count
-
-def load_and_apply_preferences():
-    settings, probabilities, weights = load_preferences()
-
-    return apply_preferences(settings, probabilities, weights)
