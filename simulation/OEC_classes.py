@@ -103,6 +103,7 @@ def business_hours_timeout(env: simpy.Environment, duration: float):
 
     while remaining > 1e-9:
         wait = hours_until_work(env.now)
+        
         if wait > 0:
             yield env.timeout(wait)
             continue
