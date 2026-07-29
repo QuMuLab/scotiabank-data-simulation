@@ -30,6 +30,7 @@ probabilities:
   hand_over_chance: 0.7
   base_clarification_chance: 0.1
   incident_resolution_sessions_weight: 0.15
+  incorrect_field_chance: 0.001
 
 weights:
   providers:
@@ -52,11 +53,11 @@ weights:
     Formal Complaint: 0.02
     Web Page (Complaints): 0.03
   missing_fields:
-    customerlegalrep: 0.025
-    acc_transit: 0.025
-    customeraddress: 0.02
-    customercity: 0.02
-    customerbphoneno: 0.01
+    customerlegalrep: 25
+    acc_transit: 25
+    customeraddress: 2
+    customercity: 2
+    customerbphoneno: 1
   root_causes: 
     Claims: 
       Procedure / Process: 0.55

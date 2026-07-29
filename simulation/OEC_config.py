@@ -32,7 +32,7 @@ def apply_incidents(incident_settings: dict):
 
 def apply_preferences(settings, probabilities, weights):
     global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight
-    global select_unassigned_incident_chance, select_new_incident_chance, fav_outcome_chance, sla_multiplier, potential_fraud_chance, high_priority_threshold, hand_over_chance, base_clarify_chance
+    global select_unassigned_incident_chance, select_new_incident_chance, fav_outcome_chance, sla_multiplier, potential_fraud_chance, high_priority_threshold, hand_over_chance, base_clarify_chance, incorrect_field_chance
     global providers, priorities, reception_channels, missing_fields, root_causes, clarification_reasons
 
     start_date = settings["start_date"]
@@ -62,6 +62,7 @@ def apply_preferences(settings, probabilities, weights):
     hand_over_chance = probabilities["hand_over_chance"]
     base_clarify_chance = probabilities["base_clarification_chance"]
     incident_resolution_sessions_weight = probabilities["incident_resolution_sessions_weight"]
+    incorrect_field_chance = probabilities["incorrect_field_chance"]
 
     providers = weights["providers"]
     priorities = weights["priorities"]

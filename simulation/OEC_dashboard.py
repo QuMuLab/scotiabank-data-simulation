@@ -362,7 +362,7 @@ def build_slider_marks(max_hour: float, target_marks: int = 8) -> dict:
     }
 
 def format_hour(hour: float) -> str:
-    return (config.start_datetime + pd.Timedelta(hours = hour)).strftime("%b %d, %H:%M:%Y")
+    return (config.start_datetime + pd.Timedelta(hours = hour)).strftime("%b %d, %H:%M %Y")
 
 def incident_summary_text(df: pd.DataFrame, incident_itemno: str) -> str:
     rows = df[df["incident_itemno"] == incident_itemno]
@@ -673,7 +673,8 @@ def build_app() -> Dash:
                 "incident_high_priority_threshold": high_priority_threshold_value,
                 "hand_over_chance": hand_over,
                 "base_clarification_chance": base_clarification,
-                "incident_resolution_sessions_weight": resolution_sessions_weight
+                "incident_resolution_sessions_weight": resolution_sessions_weight,
+                "incorrect_field_chance" : 0.05 # placeholder
             }
 
             providers = {item["index"]: weight for item, weight in zip(provider_ids, provider_weights)}
@@ -688,7 +689,7 @@ def build_app() -> Dash:
                 "priorities": priorities,
                 "reception_channels": receptions,
                 "missing_fields": missing_fields,
-                "root_causes": config.load_preferences()[2]["root_causes"],
+                "root_causes": config.load_preferences()[2]["root_causes"], # placeholder
                 "clarification_reasons": clarification_reasons
             }
 

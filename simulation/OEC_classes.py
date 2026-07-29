@@ -232,6 +232,11 @@ class Employee(object):
         while True:
             yield self.env.process(self.work_session(incident))
 
+            if len(incident.incorrect_fields) > 0 and random.random() < 0.5:
+                yield self.env.process(self.fix_incorrect_field(incident))
+                incident.access_incident()
+                continue
+
             if self.maybe_request_clarification(incident):
                 yield self.env.process(self.clarify(incident))
                 incident.access_incident()
@@ -293,15 +298,29 @@ class Employee(object):
         self.current_incident = None
         unassigned_queue.append(incident)
 
+    def fix_incorrect_field(self, incident: Incident):
+        random.shuffle(incident.incorrect_fields)
+        field_info = incident.incorrect_fields[0]
+
+        yield self.env.process(self.clarify(incident, reason = "Missing Information"))
+        incident.edit_field(
+            field_info["description"],
+            field_info["field"],
+            field_info["correct_val"],
+            field_info["curval"]
+        )
+
+        incident.incorrect_fields.pop(0)
+
     def maybe_request_clarification(self, incident: Incident) -> bool:
         base_odds = config.base_clarify_chance
         odds = max(base_odds * (0.4 ** incident.clarification_count), 0.01)
 
         return random.random() < odds
 
-    def clarify(self, incident: Incident):
+    def clarify(self, incident: Incident, reason: str = None):
         incident.clarification_count += 1
-        yield self.env.process(incident.clarify_incident())
+        yield self.env.process(incident.clarify_incident(reason))
 
         wait_time = random.uniform(
             config.employee_clarify_wait["minimum"], 
@@ -350,7 +369,7 @@ class Incident(object):
         self.event_sequence = itertools.count()
         self.work_sessions = 0
         self.clarification_count = 0
-        self.incorrect_or_missing_fields = []
+        self.incorrect_fields = []
 
         config.incidents.append(self)
         self.env.process(self.create_incident())
@@ -373,40 +392,11 @@ class Incident(object):
             "Female" : [fake.first_name_female(), fake.last_name_female()]
         }
 
-        phone_numbers = [fake.msisdn() for _ in range(3)]
-
         reception_channels = list(config.reception_channels.keys())
         reception_channel_weights = [
             config.reception_channels[reception_channel]
             for reception_channel in reception_channels
         ]
-
-        field_value_map = {
-            "incidenttype" : self.incident_type,
-            "bnscustomer" : "Yes",
-            "receptionchannel" : random.choices(reception_channels, weights = reception_channel_weights, k = 1)[0], 
-            "customertype" : None, 
-            "customername" : gender_name_map[gender][0], 
-            "customerlastname" : gender_name_map[gender][1], 
-            "customerbusinessname" : None,  
-            "cif" : None, 
-            "gender" : gender, 
-            "citizenship" : "CA", 
-            "resident" : "CA", 
-            "customerlegalrep" : None, 
-            "customeraddress" : fake.street_address(), 
-            "customercity" : fake.city(), 
-            "customeremail" : fake.email(), 
-            "customerbphoneno" : f"{phone_numbers[0][:3]}-{phone_numbers[0][3:6]}-{phone_numbers[0][6:10]}", 
-            "customerhphoneno" : f"{phone_numbers[1][:3]}-{phone_numbers[1][3:6]}-{phone_numbers[1][6:10]}", 
-            "customercphoneno" : f"{phone_numbers[2][:3]}-{phone_numbers[2][3:6]}-{phone_numbers[2][6:10]}"
-        }
-
-        for field in starting_fields:
-            newval = field_value_map[field]
-            description = field_description_map[field]
-
-            self.edit_field(description, field, newval, None)
 
         provider_types = list(config.providers.keys())
         provider_weights = [
@@ -421,30 +411,67 @@ class Incident(object):
         ]
 
         field_value_map = {
-            "acc_transit" : random.choice(config.transits),
-            "category" : self.category,
-            "account_no" : fake.bban()[4:],
-            "account_type" : None,
-            "subcategory" :  self.subcategory,
-            "description" : self.description_two,
-            "provider" : random.choices(provider_types, weights = provider_weights, k = 1)[0],
-            "vttransitnames" : None,
-            "account_status" : None,
-            "fees" : "Waive",
-            "amountclaimed" : None,
-            "transit" : None,
-            "chargefees" : 0,
-            "potentialfraudfo" : random.choices(["Yes", "No"], weights = [config.potential_fraud_chance, 1 - config.potential_fraud_chance], k = 1)[0],
-            "prodchannel" : self.prod_channel,
-            "transactiondate" : (config.start_datetime - datetime.timedelta(days = random.randint(0, config.transaction_window))).date(),
-            "producttype" : self.product_type,
-            "complainttype" : self.complaint_type,
-            "priority" : random.choices(priority_types, weights = priority_weights, k = 1)[0]
+            "incidenttype" : lambda: self.incident_type,
+            "bnscustomer" : lambda: "Yes",
+            "receptionchannel" : lambda: random.choices(reception_channels, weights = reception_channel_weights, k = 1)[0], 
+            "customertype" : lambda: None, 
+            "customername" : lambda: gender_name_map[gender][0], 
+            "customerlastname" : lambda: gender_name_map[gender][1], 
+            "customerbusinessname" : lambda: None,  
+            "cif" : lambda:  None, 
+            "gender" : lambda: gender, 
+            "citizenship" : lambda: "CA", 
+            "resident" : lambda: "CA", 
+            "customerlegalrep" : lambda: random.choices([None, "Yes"], weights = [0.99, 0.01], k = 1)[0], 
+            "customeraddress" : lambda: fake.street_address(), 
+            "customercity" : lambda: fake.city(), 
+            "customeremail" : lambda: fake.email(), 
+            "customerbphoneno" : lambda: f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}", 
+            "customerhphoneno" : lambda: f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}", 
+            "customercphoneno" : lambda: f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}",
+            "acc_transit" : lambda: random.choice(config.transits),
+            "category" : lambda: self.category,
+            "account_no" : lambda: fake.bban()[4:],
+            "account_type" : lambda: None,
+            "subcategory" : lambda: self.subcategory,
+            "description" : lambda: self.description_two,
+            "provider" : lambda: random.choices(provider_types, weights = provider_weights, k = 1)[0],
+            "vttransitnames" : lambda: None,
+            "account_status" : lambda: None,
+            "fees" : lambda: "Waive",
+            "amountclaimed" : lambda: None,
+            "transit" : lambda: None,
+            "chargefees" : lambda: 0,
+            "potentialfraudfo" : lambda: random.choices(["Yes", "No"], weights = [config.potential_fraud_chance, 1 - config.potential_fraud_chance], k = 1)[0],
+            "prodchannel" : lambda: self.prod_channel,
+            "transactiondate" : lambda: (config.start_datetime - datetime.timedelta(days = random.randint(0, config.transaction_window))).date(),
+            "producttype" : lambda: self.product_type,
+            "complainttype" : lambda: self.complaint_type,
+            "priority" : lambda: random.choices(priority_types, weights = priority_weights, k = 1)[0]
         }
 
-        for field in additional_fields[self.incident_type]:
-            newval = field_value_map[field]
+        for field in starting_fields + additional_fields[self.incident_type]:
+            newval = field_value_map[field]()
             description = field_description_map[field]
+
+            if field in config.missing_fields.keys():
+                if random.random() < config.incorrect_field_chance * config.missing_fields[field]:
+                    is_missing = random.random() < 0.5
+                    while True:
+                        correct_val = field_value_map[field]()
+
+                        if newval != correct_val:
+                            break
+
+                    self.incorrect_fields.append({
+                        "description" : description,
+                        "field" : field,
+                        "curval" : None if is_missing else newval,
+                        "correct_val" : correct_val
+                    })
+
+                    if is_missing:
+                        continue
 
             self.edit_field(description, field, newval, None)
 
@@ -454,9 +481,12 @@ class Incident(object):
     def access_incident(self):
         self.log_action("Access Control")
 
-    def clarify_incident(self):
-        clarification_reasons = list(config.clarification_reasons.keys())
-        clarification_reason_weights = list(config.clarification_reasons.values())
+    def clarify_incident(self, reason: str = None):
+        if reason is None:
+            clarification_reasons = list(config.clarification_reasons.keys())
+            clarification_reason_weights = list(config.clarification_reasons.values())
+
+            reason = random.choices(clarification_reasons, weights = clarification_reason_weights, k = 1)[0]
 
         self.log_action("Clarification")
         yield self.env.timeout(0.5 / 3600)
@@ -464,7 +494,7 @@ class Incident(object):
             "Field Edited", 
             "CLARIFICATION REASON", 
             "clarification_reason", 
-            random.choices(clarification_reasons, weights = clarification_reason_weights, k = 1)[0]
+            reason
         )
 
     def close_incident(self, response_type):

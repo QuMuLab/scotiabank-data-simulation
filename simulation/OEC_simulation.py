@@ -4,27 +4,27 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-Expose root_cause weights to dashboard
+Expose root_cause weights, transit wieghts, incorrect_field_chance to dashboard
 
-Non critical fields (missing or incorrect fields) -> clarifications
+Fraud chance formula + fraud chance effects: fraud root cause
+
+Response type and customer satisfaction formula
+
+Clarifications: Field Edited investigate
+
+Join Table: Additional tables
+
+More actions / branches (Access Control (More variation), Clarification, Field Edits throughout incident lifecycle), Reassign, Cancelled
+
+More outliers (incidents) and noise (weights)
+
+===
 
 Incident view incorrect times
 
-Field Edited (missing fields) investigate
+Clean up the HTML
 
-====
-
-1. More actions / branches (Access Control (More variation), Clarification, Field Edits throughout incident lifecycle), Reassign, Cancelled
-
-2. Fraud chance formula + fraud chance effects: fraud root cause
-
-3. Response type and customer satisfaction formula
-
-4. More outliers and noise (weights)
-
-5. Clean up the HTML
-
-6. README
+README
 
 ===
 
