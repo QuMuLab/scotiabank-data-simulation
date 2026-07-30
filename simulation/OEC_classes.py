@@ -254,12 +254,7 @@ class Employee(object):
 
                 incident.access_incident()
 
-        response_type = random.choices(
-            ["Favorable", "Unfavorable"], 
-            weights = [config.fav_outcome_chance, 1 - config.fav_outcome_chance], 
-            k = 1
-        )[0]
-        yield self.env.process(incident.close_incident(response_type))
+        yield self.env.process(incident.close_incident())
 
     def work_session(self, incident: Incident):
         duration = random.uniform(
@@ -410,6 +405,12 @@ class Incident(object):
             for priority_type in priority_types
         ]
 
+        self.potential_fraud = random.choices( #
+            ["Yes", "No"], 
+            weights = [config.potential_fraud_chance, 1 - config.potential_fraud_chance], 
+            k = 1
+        )[0]
+
         field_value_map = {
             "incidenttype" : lambda: self.incident_type,
             "bnscustomer" : lambda: "Yes",
@@ -442,7 +443,7 @@ class Incident(object):
             "amountclaimed" : lambda: None,
             "transit" : lambda: None,
             "chargefees" : lambda: 0,
-            "potentialfraudfo" : lambda: random.choices(["Yes", "No"], weights = [config.potential_fraud_chance, 1 - config.potential_fraud_chance], k = 1)[0],
+            "potentialfraudfo" : lambda: self.potential_fraud,
             "prodchannel" : lambda: self.prod_channel,
             "transactiondate" : lambda: (config.start_datetime - datetime.timedelta(days = random.randint(0, config.transaction_window))).date(),
             "producttype" : lambda: self.product_type,
@@ -497,21 +498,28 @@ class Incident(object):
             reason
         )
 
-    def close_incident(self, response_type):
+    def close_incident(self):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
 
         root_cause_map = config.root_causes[self.incident_type]
         root_causes = list(root_cause_map.keys())
         root_cause_weights = list(root_cause_map.values())
+        root_cause = random.choices(root_causes, weights = root_cause_weights, k = 1)[0]
+
+        session_penalty = 1 - (0.6 ** self.work_sessions)
+        clarification_penalty = 1 - (0.6 ** self.clarification_count)
+
+        response_score = (1 - session_penalty) * 0.4 + (1 - clarification_penalty) * 0.4 + int(root_cause != "Fraud") * 0.2
+        response_type = "Favorable" if random.random() < response_score else "Unfavorable"
+
+        wait_ratio = min(max((self.env.now - self.created_at) / self.service_level_agreement, 0), 1)
+        satisfaction_score = (1 - wait_ratio) * 0.4 + int(response_type == "Favorable") * 0.4 + (1 - clarification_penalty) * 0.2
+        customer_satisfaction = "Satisfied" if random.random() < satisfaction_score else "Not Satisfied"
 
         self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)
         self.log_action("Field Edited", "RESPONSE TO CUSTOMER", "customerreponse")
-        self.log_action(
-            "Field Edited", 
-            "ROOT CAUSE", 
-            "rootcause", 
-            random.choices(root_causes, weights = root_cause_weights, k = 1)[0]
-        )
+        self.log_action("Field Edited", "CUSTOMER SATISFACTION", "customersatisfaction", customer_satisfaction)
+        self.log_action("Field Edited", "ROOT CAUSE", "rootcause", root_cause)
         self.log_action("Closed")
 
         self.current_employee.current_incident = None

@@ -30,7 +30,7 @@ probabilities:
   hand_over_chance: 0.7
   base_clarification_chance: 0.1
   incident_resolution_sessions_weight: 0.15
-  incorrect_field_chance: 0.001
+  incorrect_field_chance: 0.0001
 
 weights:
   providers:

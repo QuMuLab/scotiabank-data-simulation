@@ -4,13 +4,14 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-Expose root_cause weights, transit wieghts, incorrect_field_chance to dashboard
+Expose root_cause weights, transit wieghts, incorrect_field_chance, session and clarification decay start to dashboard
+
+Remove favorable outcome from dashboard and yaml
 
 Fraud chance formula + fraud chance effects: fraud root cause
 
-Response type and customer satisfaction formula
-
 Clarifications: Field Edited investigate
+Starting Fraud Chance investigate
 
 Join Table: Additional tables
 
