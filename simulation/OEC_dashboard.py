@@ -101,7 +101,7 @@ def build_settings_fields(settings: dict) -> html.Div:
         ]
     )
 
-def build_weighted_options_fields(section_id: str, label: str, options: dict) -> html.Div:
+def build_weight_options_fields(section_id: str, label: str, options: dict) -> html.Div:
     rows = []
 
     for option_name, option_weight in options.items():
@@ -129,14 +129,14 @@ def build_weighted_options_fields(section_id: str, label: str, options: dict) ->
         style = {"marginBottom": "12px"},
     )
 
-def build_weighted_sections(weights: dict, incident_variants: dict) -> html.Div:
+def build_weight_sections(weights: dict, incident_variants: dict) -> html.Div:
     return html.Div(
         [
             html.H4("Weights"),
 
             html.Div(
                 [
-                    build_weighted_options_fields(
+                    build_weight_options_fields(
                         "prob-reception-weight",
                         "Reception Channels",
                         weights["reception_channels"]
@@ -144,13 +144,13 @@ def build_weighted_sections(weights: dict, incident_variants: dict) -> html.Div:
 
                     html.Div(
                         [
-                            build_weighted_options_fields(
+                            build_weight_options_fields(
                                 "prob-missing-fields-weight",
                                 "Missing Fields",
                                 weights["missing_fields"]
                             ),
 
-                            build_weighted_options_fields(
+                            build_weight_options_fields(
                                 "prob-clarification-reasons-weight",
                                 "Clarification Reasons",
                                 weights["clarification_reasons"]
@@ -165,16 +165,23 @@ def build_weighted_sections(weights: dict, incident_variants: dict) -> html.Div:
 
                     html.Div(
                         [
-                            build_weighted_options_fields(
+                            build_weight_options_fields(
                                 "prob-provider-weight",
                                 "Providers",
                                 weights["providers"]
                             ),
-                            build_weighted_options_fields(
+
+                            build_weight_options_fields(
                                 "prob-priority-weight",
                                 "Priorities",
                                 weights["priorities"]
                             ),
+
+                            build_weight_options_fields(
+                                "prob-factor-decay-weight",
+                                "Formula Decay Values",
+                                weights["factor_decays"]
+                            )
                         ],
                         style = {
                             "display": "flex",
@@ -183,18 +190,26 @@ def build_weighted_sections(weights: dict, incident_variants: dict) -> html.Div:
                         }
                     ),
 
-                    build_weighted_options_fields(
-                        "incident-type-weight",
-                        "Incident Types",
-                        {name: variant["weight"] for name, variant in incident_variants.items()}
+                    html.Div(
+                        [
+                            build_weight_options_fields(
+                                "incident-type-weight",
+                                "Incident Types",
+                                {name: variant["weight"] for name, variant in incident_variants.items()}
+                            )
+                        ],
+                        style = {
+                            "display": "flex",
+                            "flexDirection": "column",
+                            "gap": "5px",
+                        }
                     )
-
                 ],
                 style = {
                     "display": "flex",
                     "flexWrap": "wrap",
                     "gap": "40px",
-                },
+                }
             ),
         ],
         style = {
@@ -226,24 +241,8 @@ def build_probabilities_fields(probabilities: dict) -> html.Div:
 
             html.Div(
                 [
-                    html.Label("Favourable Outcome Chance"),
-                    dcc.Input(id = "prob-fav-outcome", type = "number", value = probabilities["favourable_outcome_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
-
-            html.Div(
-                [
                     html.Label("SLA Multiplier"),
                     dcc.Input(id = "prob-sla-multiplier", type = "number", value = probabilities["sla_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
-
-            html.Div(
-                [
-                    html.Label("Potential Fraud Chance"),
-                    dcc.Input(id = "prob-potential-fraud", type = "number", value = probabilities["potential_fraud_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
                 style = {"marginBottom": "12px"}
             ),
@@ -278,6 +277,14 @@ def build_probabilities_fields(probabilities: dict) -> html.Div:
                     dcc.Input(id = "prob-resolution-sessions-weight", type = "number", value = probabilities["incident_resolution_sessions_weight"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
                 style = {"marginBottom": "12px"}
+            ),
+
+            html.Div(
+                [
+                    html.Label("Incorrect Field Chance"),
+                    dcc.Input(id = "prob-incorrect-field-chance", type = "number", value = probabilities["incorrect_field_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                ],
+                style = {"marginBottom": "12px"}
             )
         ]
     )
@@ -298,7 +305,7 @@ def build_setup_view() -> html.Div:
                 style = {"display": "flex", "flexWrap": "wrap", "gap": "40px"}
             ),
             html.Div(
-                build_weighted_sections(weights, incident_variants)
+                build_weight_sections(weights, incident_variants)
             )
         ],
         style = {"fontFamily": "Arial, sans-serif", "margin": "24px"}
@@ -602,12 +609,11 @@ def build_app() -> Dash:
         State("setting-clarify-max", "value"),
         State("prob-select-unassigned", "value"),
         State("prob-select-new", "value"),
-        State("prob-fav-outcome", "value"),
         State("prob-sla-multiplier", "value"),
-        State("prob-potential-fraud", "value"),
         State("prob-high-priority-threshold", "value"),
         State("prob-hand-over", "value"),
         State("prob-base-clarification", "value"),
+        State("prob-incorrect-field-chance", "value"),
         State("prob-resolution-sessions-weight", "value"),
         State({"type": "prob-provider-weight", "index": ALL}, "value"),
         State({"type": "prob-provider-weight", "index": ALL}, "id"),
@@ -621,6 +627,8 @@ def build_app() -> Dash:
         State({"type": "prob-clarification-reasons-weight", "index": ALL}, "id"),
         State({"type": "incident-type-weight", "index": ALL}, "value"),
         State({"type": "incident-type-weight", "index": ALL}, "id"),
+        State({"type": "prob-factor-decay-weight", "index": ALL}, "value"),
+        State({"type": "prob-factor-decay-weight", "index": ALL}, "id"),
         prevent_initial_call = True
     )
     def run_and_render(
@@ -634,16 +642,18 @@ def build_app() -> Dash:
         session_min, session_max,
         work_break_value,
         clarify_min, clarify_max,
-        select_unassigned, select_new, fav_outcome,
-        sla_multiplier_value, potential_fraud,
+        select_unassigned, select_new,
+        sla_multiplier_value,
         high_priority_threshold_value, hand_over,
-        base_clarification, resolution_sessions_weight,
-        provider_weights, provider_ids,
-        priority_weights, priority_ids,
-        reception_weights, reception_ids,
-        missing_fields_weights, missing_fields_ids,
-        clarification_reasons_weights, clarification_reasons_ids,
-        incident_type_weights, incident_type_ids
+        base_clarification, incorrect_field_chance,
+        resolution_sessions_weight, 
+        provider_weights, provider_ids, 
+        priority_weights, priority_ids, 
+        reception_weights, reception_ids, 
+        missing_fields_weights, missing_fields_ids, 
+        clarification_reasons_weights, clarification_reasons_ids, 
+        incident_type_weights, incident_type_ids,
+        factor_decay_weights, factor_decay_ids
     ):
         
         if _n_intervals != 1 or simulation_state.get("running"):
@@ -667,14 +677,12 @@ def build_app() -> Dash:
             probabilities = {
                 "select_unassigned_incident_chance": select_unassigned,
                 "select_new_incident_chance": select_new,
-                "favourable_outcome_chance": fav_outcome,
                 "sla_multiplier": sla_multiplier_value,
-                "potential_fraud_chance": potential_fraud,
                 "incident_high_priority_threshold": high_priority_threshold_value,
                 "hand_over_chance": hand_over,
                 "base_clarification_chance": base_clarification,
                 "incident_resolution_sessions_weight": resolution_sessions_weight,
-                "incorrect_field_chance" : 0.05 # placeholder
+                "incorrect_field_chance" : incorrect_field_chance
             }
 
             providers = {item["index"]: weight for item, weight in zip(provider_ids, provider_weights)}
@@ -683,6 +691,7 @@ def build_app() -> Dash:
             missing_fields = {item["index"]: weight for item, weight in zip(missing_fields_ids, missing_fields_weights)}
             clarification_reasons = {item["index"]: weight for item, weight in zip(clarification_reasons_ids, clarification_reasons_weights)}
             incident_weights = {item["index"]: weight for item, weight in zip(incident_type_ids, incident_type_weights)}
+            factor_decays = {item["index"]: weight for item, weight in zip(factor_decay_ids, factor_decay_weights)}
 
             weights = {
                 "providers": providers,
@@ -690,6 +699,7 @@ def build_app() -> Dash:
                 "reception_channels": receptions,
                 "missing_fields": missing_fields,
                 "root_causes": config.load_preferences()[2]["root_causes"], # placeholder
+                "factor_decays": factor_decays,
                 "clarification_reasons": clarification_reasons
             }
 

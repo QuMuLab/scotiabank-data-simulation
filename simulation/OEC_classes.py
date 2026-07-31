@@ -201,7 +201,7 @@ class Employee(object):
         available_variants = config.incident_variants[selected_type]["variants"]
         variant = random.choice(available_variants)
 
-        if selected_type == "Claims" or selected_type == "Requests":
+        if selected_type in ["Claims", "Requests"]:
             incident = Incident(
                 env = self.env,
                 incident_type = selected_type,
@@ -365,6 +365,7 @@ class Incident(object):
         self.work_sessions = 0
         self.clarification_count = 0
         self.incorrect_fields = []
+        self.potential_fraud = None
 
         config.incidents.append(self)
         self.env.process(self.create_incident())
@@ -405,11 +406,15 @@ class Incident(object):
             for priority_type in priority_types
         ]
 
-        self.potential_fraud = random.choices( #
-            ["Yes", "No"], 
-            weights = [config.potential_fraud_chance, 1 - config.potential_fraud_chance], 
-            k = 1
-        )[0]
+        if self.incident_type == "Claims":
+            fraud_score = (0.025
+                + int(self.category == "Credit Card" and self.subcategory == "International POS") * 0.9
+                + int(self.category == "Debit Card" and self.subcategory == "International POS") * 0.8
+                + int(self.category == "Credit Card" and self.subcategory == "Local POS") * 0.2
+                + int(self.category == "Debit Card" and self.subcategory == "Local POS") * 0.075
+            )
+            
+            self.potential_fraud = "Yes" if random.random() < fraud_score else "No"
 
         field_value_map = {
             "incidenttype" : lambda: self.incident_type,
@@ -418,7 +423,7 @@ class Incident(object):
             "customertype" : lambda: None, 
             "customername" : lambda: gender_name_map[gender][0], 
             "customerlastname" : lambda: gender_name_map[gender][1], 
-            "customerbusinessname" : lambda: None,  
+            "customerbusinessname" : lambda: None,   
             "cif" : lambda:  None, 
             "gender" : lambda: gender, 
             "citizenship" : lambda: "CA", 
@@ -501,19 +506,23 @@ class Incident(object):
     def close_incident(self):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
 
-        root_cause_map = config.root_causes[self.incident_type]
+        root_cause_map = config.root_causes[self.incident_type].copy()
+        if self.potential_fraud == "Yes" and "Fraud" in root_cause_map:
+            root_cause_map["Fraud"] += 0.75
+
         root_causes = list(root_cause_map.keys())
         root_cause_weights = list(root_cause_map.values())
+
         root_cause = random.choices(root_causes, weights = root_cause_weights, k = 1)[0]
 
-        session_penalty = 1 - (0.6 ** self.work_sessions)
-        clarification_penalty = 1 - (0.6 ** self.clarification_count)
+        session_factor = config.factor_decays["Sessions"] ** self.work_sessions
+        clarification_factor = config.factor_decays["Clarifications"] ** self.clarification_count
 
-        response_score = (1 - session_penalty) * 0.4 + (1 - clarification_penalty) * 0.4 + int(root_cause != "Fraud") * 0.2
+        response_score = session_factor * 0.4 + clarification_factor * 0.4 + int(root_cause != "Fraud") * 0.2
         response_type = "Favorable" if random.random() < response_score else "Unfavorable"
 
-        wait_ratio = min(max((self.env.now - self.created_at) / self.service_level_agreement, 0), 1)
-        satisfaction_score = (1 - wait_ratio) * 0.4 + int(response_type == "Favorable") * 0.4 + (1 - clarification_penalty) * 0.2
+        wait_ratio = max((self.env.now - self.created_at) / (self.service_level_agreement * 24), 0)
+        satisfaction_score = (1 - wait_ratio) * 0.4 + int(response_type == "Favorable") * 0.6
         customer_satisfaction = "Satisfied" if random.random() < satisfaction_score else "Not Satisfied"
 
         self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)

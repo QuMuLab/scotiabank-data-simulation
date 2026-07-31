@@ -4,16 +4,13 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-Expose root_cause weights, transit wieghts, incorrect_field_chance, session and clarification decay start to dashboard
-
-Remove favorable outcome from dashboard and yaml
-
-Fraud chance formula + fraud chance effects: fraud root cause
-
-Clarifications: Field Edited investigate
-Starting Fraud Chance investigate
+More patterns: potential fraud causes more clarifications and access controls
 
 Join Table: Additional tables
+
+Add root_cause weights to dashboard
+
+Clarifications: Field Edited investigate
 
 More actions / branches (Access Control (More variation), Clarification, Field Edits throughout incident lifecycle), Reassign, Cancelled
 
@@ -22,8 +19,6 @@ More outliers (incidents) and noise (weights)
 ===
 
 Incident view incorrect times
-
-Clean up the HTML
 
 README
 

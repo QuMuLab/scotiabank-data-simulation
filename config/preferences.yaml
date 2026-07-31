@@ -23,9 +23,7 @@ settings:
 probabilities:
   select_unassigned_incident_chance: 0.4
   select_new_incident_chance: 0.5
-  favourable_outcome_chance: 0.7
   sla_multiplier: 1
-  potential_fraud_chance: 0.25
   incident_high_priority_threshold: 0.25
   hand_over_chance: 0.7
   base_clarification_chance: 0.1
@@ -82,3 +80,6 @@ weights:
     Missing Information: 0.8
     Inform Customer: 0.1
     Missing Documentation: 0.1
+  factor_decays:
+    Sessions: 0.6
+    Clarifications: 0.6
