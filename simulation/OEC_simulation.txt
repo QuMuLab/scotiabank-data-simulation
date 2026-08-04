@@ -4,7 +4,9 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-More patterns: potential fraud causes more clarifications and access controls
+Potential fraud causes more clarifications and access controls
+
+Missing info: small chance for additional ask
 
 Join Table: Additional tables
 
@@ -12,7 +14,13 @@ Add root_cause weights to dashboard
 
 Clarifications: Field Edited investigate
 
-More actions / branches (Access Control (More variation), Clarification, Field Edits throughout incident lifecycle), Reassign, Cancelled
+--
+
+More patterns
+
+More actions / branches (Access Control (More variation), Clarification, Field Edits throughout incident lifecycle)
+
+Reassigned and cancelled incident conclusions
 
 More outliers (incidents) and noise (weights)
 
