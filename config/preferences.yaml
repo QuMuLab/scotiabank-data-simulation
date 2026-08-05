@@ -19,6 +19,7 @@ settings:
   employee_clarification_wait:
     minimum: 1
     maximum: 24
+  preference_noise_percentage: 0.05
 
 probabilities:
   select_unassigned_incident_chance: 0.4
@@ -26,10 +27,10 @@ probabilities:
   sla_multiplier: 1
   incident_high_priority_threshold: 0.25
   hand_over_chance: 0.7
-  base_clarification_chance: 0.1
+  base_clarification_chance: 0.2
   incident_resolution_sessions_weight: 0.15
-  incorrect_field_chance: 0.0001
-  fraud_clarify_multiplier: 2
+  incorrect_field_chance: 0.01
+  fraud_clarify_multiplier: 5
   clarification_retry_chance: 0.15
   clarification_retry_decay: 0.5
 

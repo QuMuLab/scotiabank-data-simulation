@@ -1,4 +1,4 @@
-import datetime, yaml
+import datetime, yaml, random
 
 event_logs = []
 incidents = []
@@ -25,6 +25,24 @@ def load_preferences():
         config = yaml.safe_load(file)
 
     return config["settings"], config["probabilities"], config["weights"]
+
+def generate_noise(value: float, mu = 0, noise_percent = 0.05) -> float:
+    while True:
+        new_value = value + random.gauss(mu, noise_percent * abs(value))
+
+        if new_value >= 0:
+            return new_value
+
+def apply_noise(value_dict: dict):
+    result = {}
+
+    for key, val in value_dict.items():
+        if isinstance(val, dict):
+            result[key] = apply_noise(val)
+        else:
+            result[key] = generate_noise(val)
+
+    return result
 
 def apply_incidents(incident_settings: dict):
     for incident_type, weight in incident_settings.items():
@@ -54,6 +72,9 @@ def apply_preferences(settings, probabilities, weights):
     employee_work_session = settings["employee_work_session"]
     employee_work_break = settings["employee_work_break"]
     employee_clarify_wait = settings["employee_clarification_wait"]
+
+    probabilities = apply_noise(probabilities)
+    weights = apply_noise(weights)
 
     select_unassigned_incident_chance = probabilities["select_unassigned_incident_chance"]
     select_new_incident_chance = probabilities["select_new_incident_chance"]

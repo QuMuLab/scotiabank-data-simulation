@@ -5,14 +5,11 @@ import simpy, logging, random, string, pandas as pd
 
 """"
 Join Table: Additional tables
- - Add Case ID and activity columns to the main DF
  - Versions: incident type with receipt channel and product type, etc
 
-Add root_cause weights to the dashboard
+Add root_cause weights, noise percentage to the dashboard
 
 Employee specific odds
-
-Add noise to weights
 
 - 
 
