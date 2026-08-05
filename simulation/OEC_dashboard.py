@@ -285,6 +285,30 @@ def build_probabilities_fields(probabilities: dict) -> html.Div:
                     dcc.Input(id = "prob-incorrect-field-chance", type = "number", value = probabilities["incorrect_field_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
                 ],
                 style = {"marginBottom": "12px"}
+            ),
+
+            html.Div(
+                [
+                    html.Label("Fraud Clarification Multiplier"),
+                    dcc.Input(id = "prob-fraud-clarify-multiplier", type = "number", value = probabilities["fraud_clarify_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                ],
+                style = {"marginBottom": "12px"}
+            ),
+
+            html.Div(
+                [
+                    html.Label("Clarification Retry Chance"),
+                    dcc.Input(id = "prob-clarifiy-retry-chance", type = "number", value = probabilities["clarification_retry_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                ],
+                style = {"marginBottom": "12px"}
+            ),
+
+            html.Div(
+                [
+                    html.Label("Clarification Retry Decay"),
+                    dcc.Input(id = "prob-clarifiy-retry-decay", type = "number", value = probabilities["clarification_retry_decay"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                ],
+                style = {"marginBottom": "12px"}
             )
         ]
     )
@@ -615,6 +639,9 @@ def build_app() -> Dash:
         State("prob-base-clarification", "value"),
         State("prob-incorrect-field-chance", "value"),
         State("prob-resolution-sessions-weight", "value"),
+        State("prob-fraud-clarify-multiplier", "value"),
+        State("prob-clarifiy-retry-chance", "value"),
+        State("prob-clarifiy-retry-decay", "value"),
         State({"type": "prob-provider-weight", "index": ALL}, "value"),
         State({"type": "prob-provider-weight", "index": ALL}, "id"),
         State({"type": "prob-priority-weight", "index": ALL}, "value"),
@@ -646,7 +673,8 @@ def build_app() -> Dash:
         sla_multiplier_value,
         high_priority_threshold_value, hand_over,
         base_clarification, incorrect_field_chance,
-        resolution_sessions_weight, 
+        resolution_sessions_weight, fraud_clarify_multiplier, 
+        clarification_retry_chance, clarification_retry_decay,
         provider_weights, provider_ids, 
         priority_weights, priority_ids, 
         reception_weights, reception_ids, 
@@ -682,7 +710,10 @@ def build_app() -> Dash:
                 "hand_over_chance": hand_over,
                 "base_clarification_chance": base_clarification,
                 "incident_resolution_sessions_weight": resolution_sessions_weight,
-                "incorrect_field_chance" : incorrect_field_chance
+                "incorrect_field_chance" : incorrect_field_chance,
+                "fraud_clarify_multiplier" : fraud_clarify_multiplier,
+                "clarification_retry_chance" : clarification_retry_chance,
+                "clarification_retry_decay" : clarification_retry_decay
             }
 
             providers = {item["index"]: weight for item, weight in zip(provider_ids, provider_weights)}

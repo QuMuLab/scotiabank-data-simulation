@@ -29,6 +29,9 @@ probabilities:
   base_clarification_chance: 0.1
   incident_resolution_sessions_weight: 0.15
   incorrect_field_chance: 0.0001
+  fraud_clarify_multiplier: 2
+  clarification_retry_chance: 0.15
+  clarification_retry_decay: 0.5
 
 weights:
   providers:

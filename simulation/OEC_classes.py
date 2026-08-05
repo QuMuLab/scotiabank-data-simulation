@@ -297,7 +297,13 @@ class Employee(object):
         random.shuffle(incident.incorrect_fields)
         field_info = incident.incorrect_fields[0]
 
-        yield self.env.process(self.clarify(incident, reason = "Missing Information"))
+        for attempt in range(3):
+            yield self.env.process(self.clarify(incident, reason = "Missing Information"))
+
+            retry_chance = config.clarification_retry_chance * (config.clarification_retry_decay ** attempt)
+            if random.random() >= retry_chance:
+                break
+
         incident.edit_field(
             field_info["description"],
             field_info["field"],
@@ -310,6 +316,9 @@ class Employee(object):
     def maybe_request_clarification(self, incident: Incident) -> bool:
         base_odds = config.base_clarify_chance
         odds = max(base_odds * (0.4 ** incident.clarification_count), 0.01)
+
+        if incident.potential_fraud == "Yes":
+            odds *= config.fraud_clarify_multiplier
 
         return random.random() < odds
 
@@ -551,6 +560,22 @@ class Incident(object):
         return self.time_remaining_hours() <= sla_total_hours * threshold
 
     def log_action(self, action_type: str, description = None, field = None, newval = None, prevval = None):
+        field_activity_map = {
+            "incidenttype" : "INCIDENT TYPE",
+            "clarification_reason" : "CLARIFICATION",
+            "responsetype" : "RESPONSE TYPE"
+        }
+        activity = None
+
+        if action_type in ["Pending", "Access Control", "Closed"]:
+            activity = action_type.upper()
+
+        elif action_type == "Field Edited" and field in ["incidenttype", "clarification_reason", "responsetype"]:
+            activity = f"{field_activity_map[field]} {newval}"
+
+        if self.incident_itemno not in config.case_ids:
+            config.case_ids[self.incident_itemno] = len(config.case_ids)
+
         config.event_logs.append({
             "incident_itemno" : self.incident_itemno,
             "action" : action_type,
@@ -569,7 +594,9 @@ class Incident(object):
             "complainttype" : self.complaint_type,
             "prodchannel" : self.prod_channel,
             "complaintdescrip" : self.complaint_description,
-            "sla" : self.service_level_agreement
+            "sla" : self.service_level_agreement,
+            "activity" : activity,
+            "case_id" : config.case_ids[self.incident_itemno]
         })
 
     def get_timestamp(self):

@@ -4,15 +4,31 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-Potential fraud causes more clarifications and access controls
-
-Missing info: small chance for additional ask
-
 Join Table: Additional tables
+ - Add Case ID and activity columns to the main DF
+ - Versions: incident type with receipt channel and product type, etc
 
-Add root_cause weights to dashboard
+Add root_cause weights to the dashboard
 
-Clarifications: Field Edited investigate
+Employee specific odds
+
+Add noise to weights
+
+- 
+
+Closed then favorable vs favorable then closed (and other small "rule breaks")
+
+Favorable rate by which fields are included / not included
+
+Product channel and other optional fields influencing end results
+
+-
+
+Incident end: fraud resolution
+
+Which fields are optional (clarifications)
+
+Root cause weights by response type and satisifaction
 
 --
 
@@ -22,23 +38,13 @@ More actions / branches (Access Control (More variation), Clarification, Field E
 
 Reassigned and cancelled incident conclusions
 
-More outliers (incidents) and noise (weights)
+More outliers (incidents)
 
-===
+--
 
 Incident view incorrect times
 
 README
-
-===
-
-Variant Weights
-
-Product Type, Account type
-
-Incident Creation: customer type, cif, account type, account status, amount claimed, fees, charge fees, priority rows
-
-Incident End: Fraud resolution, reimbursement rows
 """
 
 def generate_employees(env: simpy.Environment, count: int):
@@ -51,35 +57,10 @@ def generate_transits():
         config.transits.append(f"{transit_number} {city}")
 
 def generate_join_table(df: pd.DataFrame):
-    df = df[["incident_itemno", "action", "field", "newval", "timestamp"]]
-    field_activity_map = {
-        "incidenttype" : "INCIDENT TYPE",
-        "clarification_reason" : "CLARIFICATION",
-        "responsetype" : "RESPONSE TYPE"
-    }
-    case_ids = {}
-    join_table = []
+    df = df[["activity", "case_id", "timestamp"]]
+    df = df[df["activity"].notna()]
+    df = df.sort_values(by = ["case_id", "timestamp"])
 
-    for row in df.itertuples():
-        if row.action in ["Pending", "Access Control", "Closed"]:
-            activity = row.action.upper()
-
-        elif row.action == "Field Edited" and row.field in ["incidenttype", "clarification_reason", "responsetype"]:
-            activity = f"{field_activity_map[row.field]} {row.newval}"
-
-        else:
-            continue
-
-        if row.incident_itemno not in case_ids:
-            case_ids[row.incident_itemno] = len(case_ids)
-
-        join_table.append({
-            "activity" : activity,
-            "case_id" : case_ids[row.incident_itemno],
-            "timestamp" : row.timestamp
-        })
-
-    df = pd.DataFrame(join_table)
     df.to_csv("OEC_simulation_join_table.csv", index = False)
 
 def run_simulation(employee_count: int, logger: logging.Logger) -> pd.DataFrame:
