@@ -33,14 +33,14 @@ def generate_noise(value: float, mu = 0, noise_percent = 0.05) -> float:
         if new_value >= 0:
             return new_value
 
-def apply_noise(value_dict: dict):
+def apply_noise(value_dict: dict, noise_percent: float):
     result = {}
 
     for key, val in value_dict.items():
         if isinstance(val, dict):
-            result[key] = apply_noise(val)
+            result[key] = apply_noise(val, noise_percent)
         else:
-            result[key] = generate_noise(val)
+            result[key] = generate_noise(val, mu = 0, noise_percent = noise_percent)
 
     return result
 
@@ -51,7 +51,7 @@ def apply_incidents(incident_settings: dict):
     return incident_variants
 
 def apply_preferences(settings, probabilities, weights):
-    global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight
+    global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight, noise_percentage
     global select_unassigned_incident_chance, select_new_incident_chance, sla_multiplier, high_priority_threshold, hand_over_chance, base_clarify_chance, incorrect_field_chance, fraud_clarify_multiplier, clarification_retry_chance, clarification_retry_decay
     global providers, priorities, reception_channels, missing_fields, root_causes, clarification_reasons, factor_decays
 
@@ -72,9 +72,10 @@ def apply_preferences(settings, probabilities, weights):
     employee_work_session = settings["employee_work_session"]
     employee_work_break = settings["employee_work_break"]
     employee_clarify_wait = settings["employee_clarification_wait"]
+    noise_percentage = settings["noise_percentage"]
 
-    probabilities = apply_noise(probabilities)
-    weights = apply_noise(weights)
+    probabilities = apply_noise(probabilities, noise_percentage)
+    weights = apply_noise(weights, noise_percentage)
 
     select_unassigned_incident_chance = probabilities["select_unassigned_incident_chance"]
     select_new_incident_chance = probabilities["select_new_incident_chance"]

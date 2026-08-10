@@ -26,77 +26,85 @@ def build_settings_fields(settings: dict) -> html.Div:
                     html.Label("Start Date (Y / M / D)"),
                     dcc.Input(id = "setting-start-year", type = "number", value = settings["start_date"]["year"], style = {"width": "80px", "marginLeft": "8px"}),
                     dcc.Input(id = "setting-start-month", type = "number", value = settings["start_date"]["month"], min = 1, max = 12, style = {"width": "60px", "marginLeft": "6px"}),
-                    dcc.Input(id = "setting-start-day", type = "number", value = settings["start_date"]["day"], min = 1, max = 31, style = {"width": "60px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-start-day", type = "number", value = settings["start_date"]["day"], min = 1, max = 31, style = {"width": "60px", "marginLeft": "6px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Simulation Days"),
-                    dcc.Input(id = "setting-simulation-days", type = "number", value = settings["simulation_days"], style = {"width": "100px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-simulation-days", type = "number", value = settings["simulation_days"], style = {"width": "100px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Work Day (Start - End)"),
                     dcc.Input(id = "setting-work-day-start", type = "number", value = settings["work_day"]["start"], min = 0, max = 23, style = {"width": "60px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-work-day-end", type = "number", value = settings["work_day"]["end"], min = 0, max = 23, style = {"width": "60px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-work-day-end", type = "number", value = settings["work_day"]["end"], min = 0, max = 23, style = {"width": "60px", "marginLeft": "6px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Employee Count"),
-                    dcc.Input(id = "setting-employee-count", type = "number", value = settings["employee_count"], style = {"width": "100px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-employee-count", type = "number", value = settings["employee_count"], style = {"width": "100px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Transaction Date Window (Days)"),
-                    dcc.Input(id = "setting-transaction-window", type = "number", value = settings["transaction_date_window"], style = {"width": "100px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-transaction-window", type = "number", value = settings["transaction_date_window"], style = {"width": "100px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Employee Timeout (Hours, Min - Max)"),
                     dcc.Input(id = "setting-timeout-min", type = "number", value = settings["employee_timeout"]["minimum"], step = "any", style = {"width": "80px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-timeout-max", type = "number", value = settings["employee_timeout"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-timeout-max", type = "number", value = settings["employee_timeout"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Employee Work Session (Hours, Min - Max)"),
                     dcc.Input(id = "setting-session-min", type = "number", value = settings["employee_work_session"]["minimum"], step = "any", style = {"width": "80px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-session-max", type = "number", value = settings["employee_work_session"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-session-max", type = "number", value = settings["employee_work_session"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Employee Work Break (Hours)"),
-                    dcc.Input(id = "setting-work-break", type = "number", value = settings["employee_work_break"], step = "any", style = {"width": "100px", "marginLeft": "8px"}),
+                    dcc.Input(id = "setting-work-break", type = "number", value = settings["employee_work_break"], step = "any", style = {"width": "100px", "marginLeft": "8px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
             ),
 
             html.Div(
                 [
                     html.Label("Employee Clarification Wait (Hours, Min - Max)"),
                     dcc.Input(id = "setting-clarify-min", type = "number", value = settings["employee_clarification_wait"]["minimum"], step = "any", style = {"width": "80px", "marginLeft": "8px"}),
-                    dcc.Input(id = "setting-clarify-max", type = "number", value = settings["employee_clarification_wait"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"}),
+                    dcc.Input(id = "setting-clarify-max", type = "number", value = settings["employee_clarification_wait"]["maximum"], step = "any", style = {"width": "80px", "marginLeft": "6px"})
                 ],
-                style = {"marginBottom": "12px"},
+                style = {"marginBottom": "12px"}
+            ),
+
+            html.Div(
+                [
+                    html.Label("Probabilities and Weight Noise Percentage"),
+                    dcc.Input(id = "setting-noise-percent", type = "number", value = settings["noise_percentage"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                ],
+                style = {"marginBottom": "12px"}
             ),
         ]
     )
@@ -354,22 +362,29 @@ def compute_assignment_intervals(df: pd.DataFrame, max_hour: float) -> pd.DataFr
     intervals = []
     open_by_employee = {}
 
+    closed_pairs = set(df.loc[df["action"] == "Closed", ["username", "incident_itemno"]].itertuples(index = False, name = None))
+    last_event = df.groupby(["username", "incident_itemno"])["sequence"].max().to_dict()
+
     for row in df.itertuples(index = False):
         current = open_by_employee.get(row.username)
 
         if current is None or current[0] != row.incident_itemno:
             if current is not None:
-                intervals.append({"employee": row.username, "incident": current[0], "start": current[1], "end": row.timestamp_hour})
+                intervals.append({"employee": row.username, "incident": current[0], "start": current[1], "end": current[2]})
 
-            open_by_employee[row.username] = (row.incident_itemno, row.timestamp_hour)
+            open_by_employee[row.username] = [row.incident_itemno, row.timestamp_hour, row.timestamp_hour]
             current = open_by_employee[row.username]
+        else:
+            current[2] = row.timestamp_hour
 
-        if row.action in ("Closed", "Handoff"):
+        pair = (row.username, row.incident_itemno)
+
+        if row.action == "Handoff" or (pair in closed_pairs and row.sequence == last_event[pair]):
             intervals.append({"employee": row.username, "incident": row.incident_itemno, "start": current[1], "end": row.timestamp_hour})
             del open_by_employee[row.username]
 
-    for username, (incident, start) in open_by_employee.items():
-        intervals.append({"employee": username, "incident": incident, "start": start, "end": max_hour})
+    for username, (incident, start, last_seen) in open_by_employee.items():
+        intervals.append({"employee": username, "incident": incident, "start": start, "end": last_seen})
 
     return pd.DataFrame(intervals, columns = ["employee", "incident", "start", "end"])
 
@@ -631,6 +646,7 @@ def build_app() -> Dash:
         State("setting-work-break", "value"),
         State("setting-clarify-min", "value"),
         State("setting-clarify-max", "value"),
+        State("setting-noise-percent", "value"),
         State("prob-select-unassigned", "value"),
         State("prob-select-new", "value"),
         State("prob-sla-multiplier", "value"),
@@ -669,6 +685,7 @@ def build_app() -> Dash:
         session_min, session_max,
         work_break_value,
         clarify_min, clarify_max,
+        noise_percent,
         select_unassigned, select_new,
         sla_multiplier_value,
         high_priority_threshold_value, hand_over,
@@ -700,6 +717,7 @@ def build_app() -> Dash:
                 "employee_work_session": {"minimum": session_min, "maximum": session_max},
                 "employee_work_break": work_break_value,
                 "employee_clarification_wait": {"minimum": clarify_min, "maximum": clarify_max},
+                "noise_percentage" : noise_percent
             }
 
             probabilities = {

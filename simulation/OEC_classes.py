@@ -127,6 +127,11 @@ class Employee(object):
         self.username = f"{fake.first_name()} {fake.last_name()}"
         self.current_incident = None
 
+        self.employee_timeout = config.apply_noise(config.employee_timeout, config.noise_percentage * 2)
+        self.employee_work_session = config.apply_noise(config.employee_work_session, config.noise_percentage * 2)
+        self.employee_work_break = config.generate_noise(config.employee_work_break, noise_percent = config.noise_percentage * 2)
+        self.employee_clarify_wait = config.apply_noise(config.employee_clarify_wait, config.noise_percentage * 2)
+
         self.env.process(self.run())
 
     def run(self):
@@ -135,7 +140,7 @@ class Employee(object):
             if wait:
                 yield self.env.timeout(wait)
 
-            yield self.env.timeout(random.uniform(config.employee_timeout["minimum"], config.employee_timeout["maximum"]))
+            yield self.env.timeout(random.uniform(self.employee_timeout["minimum"], self.employee_timeout["maximum"]))
 
             if hours_until_work(self.env.now) > 0:
                 continue
@@ -258,8 +263,8 @@ class Employee(object):
 
     def work_session(self, incident: Incident):
         duration = random.uniform(
-            config.employee_work_session["minimum"],
-            config.employee_work_session["maximum"]
+            self.employee_work_session["minimum"],
+            self.employee_work_session["maximum"]
         )
         duration = min(duration, max(incident.time_remaining_hours(), 0.05))
         incident.work_sessions += 1
@@ -272,7 +277,7 @@ class Employee(object):
         if remaining <= 0:
             return 0
 
-        max_break = min(remaining * 0.5, config.employee_work_break)
+        max_break = min(remaining * 0.5, self.employee_work_break)
         if max_break <= 0:
             return 0
 
@@ -327,8 +332,8 @@ class Employee(object):
         yield self.env.process(incident.clarify_incident(reason))
 
         wait_time = random.uniform(
-            config.employee_clarify_wait["minimum"], 
-            config.employee_clarify_wait["maximum"]
+            self.employee_clarify_wait["minimum"], 
+            self.employee_clarify_wait["maximum"]
         )
         wait_time = min(wait_time, max(incident.time_remaining_hours(), 0.1))
 
@@ -402,6 +407,7 @@ class Incident(object):
             config.reception_channels[reception_channel]
             for reception_channel in reception_channels
         ]
+        self.reception_channel = random.choices(reception_channels, weights = reception_channel_weights, k = 1)[0]
 
         provider_types = list(config.providers.keys())
         provider_weights = [
@@ -428,7 +434,7 @@ class Incident(object):
         field_value_map = {
             "incidenttype" : lambda: self.incident_type,
             "bnscustomer" : lambda: "Yes",
-            "receptionchannel" : lambda: random.choices(reception_channels, weights = reception_channel_weights, k = 1)[0], 
+            "receptionchannel" : lambda: self.reception_channel, 
             "customertype" : lambda: None, 
             "customername" : lambda: gender_name_map[gender][0], 
             "customerlastname" : lambda: gender_name_map[gender][1], 
@@ -534,11 +540,22 @@ class Incident(object):
         satisfaction_score = (1 - wait_ratio) * 0.4 + int(response_type == "Favorable") * 0.6
         customer_satisfaction = "Satisfied" if random.random() < satisfaction_score else "Not Satisfied"
 
-        self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)
-        self.log_action("Field Edited", "RESPONSE TO CUSTOMER", "customerreponse")
-        self.log_action("Field Edited", "CUSTOMER SATISFACTION", "customersatisfaction", customer_satisfaction)
-        self.log_action("Field Edited", "ROOT CAUSE", "rootcause", root_cause)
-        self.log_action("Closed")
+        if random.random() <= config.generate_noise(0.8):
+            self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)
+            self.log_action("Field Edited", "RESPONSE TO CUSTOMER", "customerreponse")
+            self.log_action("Field Edited", "CUSTOMER SATISFACTION", "customersatisfaction", customer_satisfaction)
+            self.log_action("Field Edited", "ROOT CAUSE", "rootcause", root_cause)
+            self.log_action("Closed")
+
+        else:
+            self.log_action("Field Edited", "ROOT CAUSE", "rootcause", root_cause)
+            self.log_action("Closed")
+
+            yield from business_hours_timeout(self.env, random.uniform(0.25, 2))
+
+            self.log_action("Field Edited", "RESPONSE TYPE", "responsetype", response_type)
+            self.log_action("Field Edited", "RESPONSE TO CUSTOMER", "customerreponse")
+            self.log_action("Field Edited", "CUSTOMER SATISFACTION", "customersatisfaction", customer_satisfaction)
 
         self.current_employee.current_incident = None
 
@@ -572,6 +589,9 @@ class Incident(object):
 
         elif action_type == "Field Edited" and field in ["incidenttype", "clarification_reason", "responsetype"]:
             activity = f"{field_activity_map[field]} {newval}"
+
+            if field == "incidenttype":
+                activity += f" VIA {self.reception_channel}"
 
         if self.incident_itemno not in config.case_ids:
             config.case_ids[self.incident_itemno] = len(config.case_ids)

@@ -19,7 +19,7 @@ settings:
   employee_clarification_wait:
     minimum: 1
     maximum: 24
-  preference_noise_percentage: 0.05
+  noise_percentage: 0.05
 
 probabilities:
   select_unassigned_incident_chance: 0.4

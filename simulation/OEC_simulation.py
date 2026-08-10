@@ -4,44 +4,17 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
-Join Table: Additional tables
- - Versions: incident type with receipt channel and product type, etc
-
-Add root_cause weights, noise percentage to the dashboard
-
-Employee specific odds
-
-- 
-
-Closed then favorable vs favorable then closed (and other small "rule breaks")
-
 Favorable rate by which fields are included / not included
 
 Product channel and other optional fields influencing end results
 
 -
 
-Incident end: fraud resolution
-
-Which fields are optional (clarifications)
-
-Root cause weights by response type and satisifaction
-
---
-
-More patterns
-
-More actions / branches (Access Control (More variation), Clarification, Field Edits throughout incident lifecycle)
+More *Access Controls* & Field Edits throughout incident lifecycle
 
 Reassigned and cancelled incident conclusions
 
 More outliers (incidents)
-
---
-
-Incident view incorrect times
-
-README
 """
 
 def generate_employees(env: simpy.Environment, count: int):
