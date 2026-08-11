@@ -4,15 +4,10 @@ import OEC_classes as classes
 import simpy, logging, random, string, pandas as pd
 
 """"
+Final Testing
+
 Favorable rate by which fields are included / not included
-
  - Product channel and other optional fields influencing end results
-
-More *Access Controls* & Field Edits throughout incident lifecycle
-
-Reassigned and cancelled incident conclusions
-
-More outliers (incidents)
 """
 
 def generate_employees(env: simpy.Environment, count: int):

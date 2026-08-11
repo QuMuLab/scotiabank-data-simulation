@@ -183,12 +183,6 @@ def build_weight_sections(weights: dict, incident_variants: dict) -> html.Div:
                                 "prob-priority-weight",
                                 "Priorities",
                                 weights["priorities"]
-                            ),
-
-                            build_weight_options_fields(
-                                "prob-factor-decay-weight",
-                                "Formula Decay Values",
-                                weights["factor_decays"]
                             )
                         ],
                         style = {
@@ -204,6 +198,12 @@ def build_weight_sections(weights: dict, incident_variants: dict) -> html.Div:
                                 "incident-type-weight",
                                 "Incident Types",
                                 {name: variant["weight"] for name, variant in incident_variants.items()}
+                            ),
+
+                            build_weight_options_fields(
+                                "prob-factor-decay-weight",
+                                "Formula Decay Values",
+                                weights["factor_decays"]
                             )
                         ],
                         style = {
@@ -233,90 +233,133 @@ def build_probabilities_fields(probabilities: dict) -> html.Div:
 
             html.Div(
                 [
-                    html.Label("Select Unassigned Incident Chance"),
-                    dcc.Input(id = "prob-select-unassigned", type = "number", value = probabilities["select_unassigned_incident_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                    # COLUMN 1
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.Label("Select Unassigned Incident Chance"),
+                                    dcc.Input(id = "prob-select-unassigned", type = "number", value = probabilities["select_unassigned_incident_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Select New Incident Chance"),
-                    dcc.Input(id = "prob-select-new", type = "number", value = probabilities["select_new_incident_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Select New Incident Chance"),
+                                    dcc.Input(id = "prob-select-new", type = "number", value = probabilities["select_new_incident_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("SLA Multiplier"),
-                    dcc.Input(id = "prob-sla-multiplier", type = "number", value = probabilities["sla_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("SLA Multiplier"),
+                                    dcc.Input(id = "prob-sla-multiplier", type = "number", value = probabilities["sla_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Incident High Priority Threshold"),
-                    dcc.Input(id = "prob-high-priority-threshold", type = "number", value = probabilities["incident_high_priority_threshold"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Incident High Priority Threshold"),
+                                    dcc.Input(id = "prob-high-priority-threshold", type = "number", value = probabilities["incident_high_priority_threshold"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Hand Over Chance"),
-                    dcc.Input(id = "prob-hand-over", type = "number", value = probabilities["hand_over_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Hand Over Chance"),
+                                    dcc.Input(id = "prob-hand-over", type = "number", value = probabilities["hand_over_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Base Clarification Chance"),
-                    dcc.Input(id = "prob-base-clarification", type = "number", value = probabilities["base_clarification_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Base Clarification Chance"),
+                                    dcc.Input(id = "prob-base-clarification", type = "number", value = probabilities["base_clarification_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Incident Resolution Sessions Weight"),
-                    dcc.Input(id = "prob-resolution-sessions-weight", type = "number", value = probabilities["incident_resolution_sessions_weight"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Incident Resolution Sessions Weight"),
+                                    dcc.Input(id = "prob-resolution-sessions-weight", type = "number", value = probabilities["incident_resolution_sessions_weight"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Incorrect Field Chance"),
-                    dcc.Input(id = "prob-incorrect-field-chance", type = "number", value = probabilities["incorrect_field_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Incorrect Field Chance"),
+                                    dcc.Input(id = "prob-incorrect-field-chance", type = "number", value = probabilities["incorrect_field_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Fraud Clarification Multiplier"),
-                    dcc.Input(id = "prob-fraud-clarify-multiplier", type = "number", value = probabilities["fraud_clarify_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Fraud Clarification Multiplier"),
+                                    dcc.Input(id = "prob-fraud-clarify-multiplier", type = "number", value = probabilities["fraud_clarify_multiplier"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
 
-            html.Div(
-                [
-                    html.Label("Clarification Retry Chance"),
-                    dcc.Input(id = "prob-clarifiy-retry-chance", type = "number", value = probabilities["clarification_retry_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
-                ],
-                style = {"marginBottom": "12px"}
-            ),
+                            html.Div(
+                                [
+                                    html.Label("Clarification Retry Chance"),
+                                    dcc.Input(id = "prob-clarifiy-retry-chance", type = "number", value = probabilities["clarification_retry_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            )
+                        ]
+                    ),
 
-            html.Div(
-                [
-                    html.Label("Clarification Retry Decay"),
-                    dcc.Input(id = "prob-clarifiy-retry-decay", type = "number", value = probabilities["clarification_retry_decay"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                    # COLUMN 2
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.Label("Clarification Retry Decay"),
+                                    dcc.Input(id = "prob-clarifiy-retry-decay", type = "number", value = probabilities["clarification_retry_decay"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Base Reassign Chance"),
+                                    dcc.Input(id = "prob-base-reassign-chance", type = "number", value = probabilities["base_reassign_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Base Cancel Chance"),
+                                    dcc.Input(id = "prob-base-cancel-chance", type = "number", value = probabilities["base_cancel_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Incident Blowup Chance"),
+                                    dcc.Input(id = "prob-incident-blowup-chance", type = "number", value = probabilities["incident_blowup_chance"], step = "any", style = {"width": "80px", "marginLeft": "8px"})
+                                ],
+                                style = {"marginBottom": "12px"}
+                            )
+                        ]
+                    )
                 ],
-                style = {"marginBottom": "12px"}
+                style = {
+                    "display": "flex",
+                    "gap": "40px",
+                    "alignItems": "flex-start"
+                }
             )
         ]
     )
@@ -658,6 +701,9 @@ def build_app() -> Dash:
         State("prob-fraud-clarify-multiplier", "value"),
         State("prob-clarifiy-retry-chance", "value"),
         State("prob-clarifiy-retry-decay", "value"),
+        State("prob-base-reassign-chance", "value"),
+        State("prob-base-cancel-chance", "value"),
+        State("prob-incident-blowup-chance", "value"),
         State({"type": "prob-provider-weight", "index": ALL}, "value"),
         State({"type": "prob-provider-weight", "index": ALL}, "id"),
         State({"type": "prob-priority-weight", "index": ALL}, "value"),
@@ -692,7 +738,8 @@ def build_app() -> Dash:
         base_clarification, incorrect_field_chance,
         resolution_sessions_weight, fraud_clarify_multiplier, 
         clarification_retry_chance, clarification_retry_decay,
-        provider_weights, provider_ids, 
+        base_reassign_chance, base_cancel_chance, incident_blowup_chance,
+        provider_weights, provider_ids,
         priority_weights, priority_ids, 
         reception_weights, reception_ids, 
         missing_fields_weights, missing_fields_ids, 
@@ -731,7 +778,10 @@ def build_app() -> Dash:
                 "incorrect_field_chance" : incorrect_field_chance,
                 "fraud_clarify_multiplier" : fraud_clarify_multiplier,
                 "clarification_retry_chance" : clarification_retry_chance,
-                "clarification_retry_decay" : clarification_retry_decay
+                "clarification_retry_decay" : clarification_retry_decay,
+                "base_reassign_chance" : base_reassign_chance,
+                "base_cancel_chance" : base_cancel_chance,
+                "incident_blowup_chance" : incident_blowup_chance
             }
 
             providers = {item["index"]: weight for item, weight in zip(provider_ids, provider_weights)}

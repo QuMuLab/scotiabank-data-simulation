@@ -52,7 +52,7 @@ def apply_incidents(incident_settings: dict):
 
 def apply_preferences(settings, probabilities, weights):
     global start_datetime, simulation_days, work_day_start, work_day_end, transaction_window, employee_timeout, employee_work_session, employee_work_break, employee_clarify_wait, incident_resolution_sessions_weight, noise_percentage
-    global select_unassigned_incident_chance, select_new_incident_chance, sla_multiplier, high_priority_threshold, hand_over_chance, base_clarify_chance, incorrect_field_chance, fraud_clarify_multiplier, clarification_retry_chance, clarification_retry_decay
+    global select_unassigned_incident_chance, select_new_incident_chance, sla_multiplier, high_priority_threshold, hand_over_chance, base_clarify_chance, incorrect_field_chance, fraud_clarify_multiplier, clarification_retry_chance, clarification_retry_decay, base_reassign_chance, base_cancel_chance, incident_blowup_chance
     global providers, priorities, reception_channels, missing_fields, root_causes, clarification_reasons, factor_decays
 
     start_date = settings["start_date"]
@@ -88,6 +88,9 @@ def apply_preferences(settings, probabilities, weights):
     fraud_clarify_multiplier = probabilities["fraud_clarify_multiplier"]
     clarification_retry_chance = probabilities["clarification_retry_chance"]
     clarification_retry_decay = probabilities["clarification_retry_decay"]
+    base_reassign_chance = probabilities["base_reassign_chance"]
+    base_cancel_chance = probabilities["base_cancel_chance"]
+    incident_blowup_chance = probabilities["incident_blowup_chance"]
 
     providers = weights["providers"]
     priorities = weights["priorities"]

@@ -26,13 +26,16 @@ probabilities:
   select_new_incident_chance: 0.5
   sla_multiplier: 1
   incident_high_priority_threshold: 0.25
-  hand_over_chance: 0.7
+  hand_over_chance: 0.85
   base_clarification_chance: 0.2
   incident_resolution_sessions_weight: 0.15
   incorrect_field_chance: 0.01
   fraud_clarify_multiplier: 5
   clarification_retry_chance: 0.15
   clarification_retry_decay: 0.5
+  base_reassign_chance: 0.05
+  base_cancel_chance: 0.01
+  incident_blowup_chance: 0.005
 
 weights:
   providers:

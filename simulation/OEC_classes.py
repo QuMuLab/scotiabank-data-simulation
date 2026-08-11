@@ -237,6 +237,14 @@ class Employee(object):
         while True:
             yield self.env.process(self.work_session(incident))
 
+            if not incident.access_burst_occurred and random.random() < config.incident_blowup_chance:
+                incident.access_burst_occurred = True
+
+                burst_time = max(0, random.gauss(mu = 2, sigma = 0.33))
+                self.env.process(
+                    incident.access_control_burst(burst_time, 15, 50)
+                )
+
             if len(incident.incorrect_fields) > 0 and random.random() < 0.5:
                 yield self.env.process(self.fix_incorrect_field(incident))
                 incident.access_incident()
@@ -247,6 +255,11 @@ class Employee(object):
                 incident.access_incident()
                 continue
 
+            if self.maybe_reassign():
+                incident.reassign_incident()
+                self.current_incident = None
+                return
+
             if self.is_incident_resolved(incident):
                 break
 
@@ -254,12 +267,17 @@ class Employee(object):
                 break_duration = yield self.env.process(self.work_break(incident))
 
                 if self.should_handoff(incident, break_duration):
-                    self.handoff_incident(incident)
+                    yield self.env.process(self.handoff_incident(incident))
                     return
 
                 incident.access_incident()
 
-        yield self.env.process(incident.close_incident())
+        cancel_score = min(config.base_cancel_chance + (1 - (0.99 ** incident.access_controls)), 0.35)
+        if random.random() <= cancel_score:
+            yield self.env.process(incident.cancel_incident())
+
+        else:
+            yield self.env.process(incident.close_incident())
 
     def work_session(self, incident: Incident):
         duration = random.uniform(
@@ -268,6 +286,10 @@ class Employee(object):
         )
         duration = min(duration, max(incident.time_remaining_hours(), 0.05))
         incident.work_sessions += 1
+
+        if random.random() <= 0.33:
+            yield self.env.timeout(random.uniform(0.01, 0.75))
+            incident.access_incident()
 
         yield from business_hours_timeout(self.env, duration)
 
@@ -294,6 +316,9 @@ class Employee(object):
         return random.random() < handoff_chance
 
     def handoff_incident(self, incident: Incident):
+        incident.access_incident()
+        yield from business_hours_timeout(self.env, random.uniform(0, 0.25))
+
         incident.log_action("Handoff")
         self.current_incident = None
         unassigned_queue.append(incident)
@@ -326,6 +351,9 @@ class Employee(object):
             odds *= config.fraud_clarify_multiplier
 
         return random.random() < odds
+
+    def maybe_reassign(self) -> bool:
+        return random.random() < config.base_reassign_chance
 
     def clarify(self, incident: Incident, reason: str = None):
         incident.clarification_count += 1
@@ -378,8 +406,10 @@ class Incident(object):
         self.event_sequence = itertools.count()
         self.work_sessions = 0
         self.clarification_count = 0
+        self.access_controls = 0
         self.incorrect_fields = []
         self.potential_fraud = None
+        self.access_burst_occurred = False
 
         config.incidents.append(self)
         self.env.process(self.create_incident())
@@ -431,6 +461,8 @@ class Incident(object):
             
             self.potential_fraud = "Yes" if random.random() < fraud_score else "No"
 
+        self.transit = random.choice(config.transits)
+
         field_value_map = {
             "incidenttype" : lambda: self.incident_type,
             "bnscustomer" : lambda: "Yes",
@@ -450,7 +482,7 @@ class Incident(object):
             "customerbphoneno" : lambda: f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}", 
             "customerhphoneno" : lambda: f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}", 
             "customercphoneno" : lambda: f"{fake.msisdn()[:3]}-{fake.msisdn()[3:6]}-{fake.msisdn()[6:10]}",
-            "acc_transit" : lambda: random.choice(config.transits),
+            "acc_transit" : lambda: self.transit,
             "category" : lambda: self.category,
             "account_no" : lambda: fake.bban()[4:],
             "account_type" : lambda: None,
@@ -461,7 +493,7 @@ class Incident(object):
             "account_status" : lambda: None,
             "fees" : lambda: "Waive",
             "amountclaimed" : lambda: None,
-            "transit" : lambda: None,
+            "transit" : lambda: random.choice(config.transits),
             "chargefees" : lambda: 0,
             "potentialfraudfo" : lambda: self.potential_fraud,
             "prodchannel" : lambda: self.prod_channel,
@@ -479,7 +511,7 @@ class Incident(object):
                 if random.random() < config.incorrect_field_chance * config.missing_fields[field]:
                     is_missing = random.random() < 0.5
                     while True:
-                        correct_val = field_value_map[field]()
+                        correct_val = random.choice(config.transits) if field == "acc_transit" else field_value_map[field]()
 
                         if newval != correct_val:
                             break
@@ -500,7 +532,20 @@ class Incident(object):
         self.log_action("Field Edited", description, field, newval, prevval)
 
     def access_incident(self):
+        self.access_controls += 1
         self.log_action("Access Control")
+
+    def access_control_burst(self, timespan: float, minimum: int, maximum: int):
+        count = random.randint(minimum, maximum)
+
+        for _ in range(count):
+            if timespan <= 0:
+                break
+
+            wait = random.uniform(0.085, timespan)
+            yield self.env.timeout(wait)
+            timespan -= wait
+            self.access_incident()
 
     def clarify_incident(self, reason: str = None):
         if reason is None:
@@ -511,12 +556,25 @@ class Incident(object):
 
         self.log_action("Clarification")
         yield self.env.timeout(0.5 / 3600)
-        self.log_action(
-            "Field Edited", 
-            "CLARIFICATION REASON", 
-            "clarification_reason", 
-            reason
-        )
+        self.log_action("Field Edited", "CLARIFICATION REASON", "clarification_reason", reason)
+
+    def reassign_incident(self):
+        newval = random.choice([transit for transit in config.transits if transit != self.transit])
+
+        self.log_action("Reassigned")
+        self.log_action("Field Edited", "ASSIGNED TRANSIT NAME", "assignedtransitname", newval, self.transit)
+        self.transit = newval
+
+        burst_time = max(0, random.gauss(mu = 2, sigma = 0.33))
+        self.env.process(self.access_control_burst(burst_time, 2, 10))
+
+        self.current_employee.current_incident = None
+
+    def cancel_incident(self):
+        yield from business_hours_timeout(self.env, 0.5 / 3600)
+
+        self.log_action("Cancelled")
+        self.current_employee.current_incident = None
 
     def close_incident(self):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
