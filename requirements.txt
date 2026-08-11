@@ -3,3 +3,4 @@ pandas
 Faker
 dash
 pyyaml
+tqdm

@@ -4,7 +4,6 @@ from OEC_simulation import run_simulation
 from dash import Dash, html, dcc, Output, Input, State, ctx, no_update, ALL
 from dash.exceptions import PreventUpdate
 import pandas as pd
-import logging
 
 TICK_MS = 300
 simulation_state = {}
@@ -805,7 +804,7 @@ def build_app() -> Dash:
             simulation_days, employee_count = config.apply_preferences(settings, probabilities, weights)
             config.apply_incidents(incident_weights)
 
-            df = run_simulation(employee_count, logging.getLogger("werkzeug"))
+            df = run_simulation(employee_count)
             max_hour = simulation_days * 24
 
             simulation_state["df"] = prepare_dataframe(df)
