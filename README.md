@@ -4,7 +4,7 @@
 This repository contains code to run a discrete-event simulation that creates synthetic event logs for Scotiabanks OEC system for testing and demonstration purposes. It models how employees create and work on customer complaints, requests, and claims.
 
 ## Setup ## 
-To setup the simulation on your own machine run the following commands in order.
+To setup the simulation on your own machine run the following commands in order:
 
 ```
 git clone https://github.com/QuMuLab/scotiabank-data-simulation.git
@@ -30,12 +30,12 @@ pip install -r requirements.txt
 ```
 
 ## Usage ##
-The simulation can be ran in headless mode with
+The simulation can be ran in headless mode with:
 ```
 python simulation/OEC_simulation.py
 ```
 
-Or can be ran through an interactive dashboard with
+Or can be ran through an interactive dashboard with:
 ```
 python simulation/OEC_simulation.py --dashboard
 ```
@@ -51,7 +51,7 @@ python simulation/OEC_simulation.py --sla_multiplier 0.2 --base_reassign_chance 
 
 Run `python simulation/OEC_simulation.py --help` for a full list of the accepted parameters. But note that parameter flags will not work if the script is run with `--dashboard`.
 
-If you ran the simulation with `--dashboard` you can edit the settings through the dashboard, which is accesible at `http://127.0.0.1:8050`. You can easily adjust the settings without having to rerun the script by clicking "Back to Setup" after a run of the simulation. 
+If you ran the simulation with `--dashboard` you can edit the settings through the dashboard, which is accesible at `http://127.0.0.1:8050`. You can easily adjust the settings without having to rerun the script by clicking "Back to Setup" after a run of the simulation. The dashboard autofills with the defaults from `preferences.yaml`.
 
 Changes made directly to `preferences.yaml` will save between runs of the simulation, but changes made through the dashbaord or through the command line flags will not.
 
@@ -59,14 +59,14 @@ Additionally, you can change what kind of incidents are created by adding, remov
 
 ## Parameters ## 
 
-A brief description of what each parameter found in `preferences.yaml` does can be found below.
+A brief description of what each parameter in `preferences.yaml` does can be found below.
 #### `settings`
 
 | Key | Description |
 |---|---|
 | `start_date` | Simulated calendar start date |
 | `simulation_days` | Number of days the simulation runs for |
-| `work_day.start` / `work_day.end` | The business hours employees will work|
+| `work_day.start` / `work_day.end` | The business hours employees will work |
 | `employee_count` | Number of employees |
 | `transaction_date_window` | Max number of days old an incident's transaction day can be |
 | `employee_timeout.minimum` / `.maximum` | Hours an idle employee waits before checking for new work |
