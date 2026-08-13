@@ -14,7 +14,18 @@ git clone https://github.com/QuMuLab/scotiabank-data-simulation.git
 cd scotiabank-data-simulation
 ```
 
+ 
 ```
+python -m venv oec_simulation
+```
+ 
+```
+source oec_simulation/bin/activate # macOS or Linux
+
+oec_simulation\Scripts\activate # Windows
+```
+ 
+```-
 pip install -r requirements.txt
 ```
 
@@ -29,13 +40,20 @@ Or can be ran through an interactive dashboard with
 python simulation/OEC_simulation.py --dashboard
 ```
 
-
 ## Configuration ##
-In headless mode, the simulation settings will pull from the values in `config/preferences.yaml`, you can edit this file as you see fit and re-run the simulation to adjust it's output.
+In headless mode, the simulation settings will pull from the values in `config/preferences.yaml`, you can edit this file as you see fit and re-run the simulation to adjust it's output. Alternatively, you can pass a flag while running in headless mode with the name of a parameter and a value to overwrite that parameter's value in the yaml file.
 
-If you ran the simulation with `--dashboard` you can edit the settings through the dashboard, which is accesible at `http://127.0.0.1:8050`. You can easily adjust the settings without having to rerun the script by clicking "Back to Setup" after a run of the simulation.
+For example:
 
-Changes made directly to `preferences.yaml` will save between runs of the simulation, but changes made through the dashbaord will not.
+```
+python simulation/OEC_simulation.py --sla_multiplier 0.2 --base_reassign_chance 0.4
+```
+
+Run `python simulation/OEC_simulation.py --help` for a full list of the accepted parameters. But note that parameter flags will not work if the script is run with `--dashboard`.
+
+If you ran the simulation with `--dashboard` you can edit the settings through the dashboard, which is accesible at `http://127.0.0.1:8050`. You can easily adjust the settings without having to rerun the script by clicking "Back to Setup" after a run of the simulation. 
+
+Changes made directly to `preferences.yaml` will save between runs of the simulation, but changes made through the dashbaord or through the command line flags will not.
 
 Additionally, you can change what kind of incidents are created by adding, removing, or editing variants in `config/incidents.yaml`.
 

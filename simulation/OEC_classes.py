@@ -635,6 +635,8 @@ class Incident(object):
         return self.time_remaining_hours() <= sla_total_hours * threshold
 
     def log_action(self, action_type: str, description = None, field = None, newval = None, prevval = None):
+        include_reception_channel = True
+
         field_activity_map = {
             "incidenttype" : "INCIDENT TYPE",
             "clarification_reason" : "CLARIFICATION",
@@ -648,7 +650,7 @@ class Incident(object):
         elif action_type == "Field Edited" and field in ["incidenttype", "clarification_reason", "responsetype"]:
             activity = f"{field_activity_map[field]} {newval}"
 
-            if field == "incidenttype":
+            if field == "incidenttype" and include_reception_channel:
                 activity += f" VIA {self.reception_channel}"
 
         if self.incident_itemno not in config.case_ids:

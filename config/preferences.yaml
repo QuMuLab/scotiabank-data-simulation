@@ -35,7 +35,7 @@ probabilities:
   clarification_retry_decay: 0.5
   base_reassign_chance: 0.05
   base_cancel_chance: 0.01
-  incident_blowup_chance: 0.005
+  incident_blowup_chance: 0.05
 
 weights:
   providers:

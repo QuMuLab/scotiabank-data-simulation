@@ -17,7 +17,14 @@ def generate_join_table(df: pd.DataFrame):
     df = df[df["activity"].notna()]
     df = df.sort_values(by = ["case_id", "timestamp"])
 
-    df.to_csv("OEC_simulation_join_table.csv", index = False)
+    df.to_csv("OEC_event_table.csv", index = False)
+
+def parse_number(value: str):
+    try:
+        return int(value)
+    
+    except ValueError:
+        return float(value)
 
 def run_simulation(employee_count: int) -> pd.DataFrame:
     config.reset()
@@ -40,28 +47,56 @@ def run_simulation(employee_count: int) -> pd.DataFrame:
 
     df = pd.DataFrame(config.event_logs)
     df = df.sort_values(by = ["incident_itemno", "timestamp"])
-    df.to_csv("OEC_simulation_results.csv", index = False)
+    df.to_csv("OEC_information_table.csv", index = False)
 
     generate_join_table(df)
-    print("Simulation results saved to OEC_simulation_results.csv")
+    print("Simulation results saved to OEC_information_table.csv")
 
     return df
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dashboard", action = "store_true")
-    args = parser.parse_args()
-
     config.load_incidents()
+    settings, probabilities, weights = config.load_preferences()
+ 
+    parser = argparse.ArgumentParser(usage = "%(prog)s [--dashboard] [--param_name value ...]")
+    parser.add_argument("--dashboard", action = "store_true")
+ 
+    flags = []
+ 
+    for key in probabilities:
+        flags.append((key, probabilities, key))
+ 
+    for key, value in settings.items():
+        if isinstance(value, dict):
+            for subkey in value:
+                flags.append((f"{key}_{subkey}", value, subkey))
 
+        else:
+            flags.append((key, settings, key))
+ 
+    for flag_name, _, _ in flags:
+        parser.add_argument(f"--{flag_name}", type = parse_number, default = None)
+ 
+    args = parser.parse_args()
+ 
+    passed_flags = [flag_name for flag_name, _, _ in flags if getattr(args, flag_name) is not None]
+ 
+    if args.dashboard and passed_flags:
+        print(f"error: --dashboard cannot be combined with other flags, got: {passed_flags}")
+        raise SystemExit(1)
+ 
     if args.dashboard:
         from OEC_dashboard import launch_dashboard
-
-        config.load_incidents()
+ 
         launch_dashboard()
+ 
+    else:
+        for flag_name, target_dict, key in flags:
+            value = getattr(args, flag_name)
 
-    else:   
-        settings, probabilities, weights = config.load_preferences()
+            if value is not None:
+                target_dict[key] = value
+ 
         simulation_days, employee_count = config.apply_preferences(settings, probabilities, weights)
-
+ 
         run_simulation(employee_count)

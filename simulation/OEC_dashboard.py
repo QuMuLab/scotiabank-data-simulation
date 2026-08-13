@@ -3,7 +3,7 @@ from OEC_simulation import run_simulation
 
 from dash import Dash, html, dcc, Output, Input, State, ctx, no_update, ALL
 from dash.exceptions import PreventUpdate
-import pandas as pd
+import threading, webbrowser, pandas as pd
 
 TICK_MS = 300
 simulation_state = {}
@@ -904,6 +904,8 @@ def build_app() -> Dash:
 
     return app
 
-def launch_dashboard():
+def launch_dashboard(host: str = "127.0.0.1", port: int = 8050):
     app = build_app()
-    app.run(debug = False, threaded = False)
+    threading.Timer(1.0, lambda: webbrowser.open(f"http://{host}:{port}")).start()
+
+    app.run(debug = False, threaded = False, host = host, port = port)
