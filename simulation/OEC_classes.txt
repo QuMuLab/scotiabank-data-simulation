@@ -241,9 +241,7 @@ class Employee(object):
                 incident.access_burst_occurred = True
 
                 burst_time = max(0, random.gauss(mu = 2, sigma = 0.33))
-                self.env.process(
-                    incident.access_control_burst(burst_time, 15, 50)
-                )
+                self.env.process(incident.access_control_burst(burst_time, 15, 50))
 
             if len(incident.incorrect_fields) > 0 and random.random() < 0.5:
                 yield self.env.process(self.fix_incorrect_field(incident))
@@ -295,7 +293,6 @@ class Employee(object):
 
     def work_break(self, incident: Incident):
         remaining = incident.time_remaining_hours()
-
         if remaining <= 0:
             return 0
 
