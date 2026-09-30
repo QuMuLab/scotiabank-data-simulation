@@ -204,7 +204,15 @@ class Employee(object):
         )[0]
 
         available_variants = config.incident_variants[selected_type]["variants"]
-        variant = random.choice(available_variants)
+        variant_weights = [
+            variant.get("weight", 1)
+            for variant in available_variants
+        ]
+        variant = random.choices(
+            population = available_variants,
+            weights = variant_weights,
+            k = 1,
+        )[0]
 
         if selected_type in ["Claims", "Requests"]:
             incident = Incident(

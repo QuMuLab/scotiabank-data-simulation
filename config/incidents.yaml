@@ -6,290 +6,362 @@ incident_variants:
       subcategory: International POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 120
+      weight: 0.7
     - category: Credit Card
       subcategory: International POS
       description_two: Customer claims amount charged is incorrect
       service_level_agreement: 120
+      weight: 0.7
     - category: Credit Card
       subcategory: International POS
       description_two: Investigation for credit not processed by Merchant
       service_level_agreement: 120
+      weight: 0.7
     - category: Credit Card
       subcategory: International POS
       description_two: Investigaton for Product not recieved
       service_level_agreement: 120
+      weight: 0.7
     - category: Credit Card
       subcategory: Local POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 120
+      weight: 0.3
     - category: Credit Card
       subcategory: Local POS
       description_two: Customer claims transaction was duplicated by the merchant
       service_level_agreement: 120
+      weight: 0.3
     - category: Credit Card
       subcategory: Local POS
       description_two: Customer claims amount charged is incorrect
       service_level_agreement: 120
+      weight: 0.3
     - category: Credit Card
       subcategory: Fraud
       description_two: Customer suspects transaction is fraudulent
       service_level_agreement: 120
+      weight: 0.3
     - category: Debit Card
       subcategory: International POS
       description_two: Customer claims amount charged is incorrect
       service_level_agreement: 120
+      weight: 0.6
     - category: Debit Card
       subcategory: International POS
       description_two: Customer claims transaction was duplicated by the merchant
       service_level_agreement: 120
+      weight: 0.6
     - category: Debit Card
       subcategory: International POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 120
+      weight: 0.6
     - category: Debit Card
       subcategory: International POS
       description_two: Investigation for credit not processed by Merchant
       service_level_agreement: 120
+      weight: 0.6
     - category: Debit Card
       subcategory: International POS
       description_two: Investigaton for Product not recieved
       service_level_agreement: 120
+      weight: 0.6
     - category: Debit Card
       subcategory: Local BNS ATM
       description_two: ATM Cash Not dispensed
       service_level_agreement: 10
+      weight: 0.2
     - category: Debit Card
       subcategory: Local BNS ATM
       description_two: Customer tried to withdraw but the money wasn't delivered
       service_level_agreement: 15
+      weight: 0.2
     - category: Debit Card
       subcategory: Local BNS ATM
       description_two: Customer tried to withdraw but the money wasn't delivered
       service_level_agreement: 30
+      weight: 0.2
     - category: Debit Card
       subcategory: Local BNS ATM
       description_two: Customer withdrawal, ABM didn't deliver the total amount requested
       service_level_agreement: 10
+      weight: 0.2
     - category: Debit Card
       subcategory: Local BNS ATM
       description_two: Customer withdrawal, ABM didn't deliver the total amount requested
       service_level_agreement: 30
+      weight: 0.2
     - category: Debit Card
       subcategory: Local BNS ATM
       description_two: Customer withdrawal, ABM didn't deliver the total amount requested
       service_level_agreement: 60
+      weight: 0.2
     - category: Debit Card
       subcategory: Local Non BNS ATM
       description_two: Customer tried to withdraw but the money wasn't delivered
       service_level_agreement: 15
+      weight: 1
     - category: Debit Card
       subcategory: Local Offsite ABM
       description_two: Deposit Error - Missing deposit
       service_level_agreement: 5
+      weight: 0.6
     - category: Debit Card
       subcategory: Local Offsite ABM
       description_two: Deposit Error - Partial deposit
       service_level_agreement: 5
+      weight: 0.6
     - category: Debit Card
       subcategory: Local Onsite ABM Deposit
       description_two: Deposit Error - Missing deposit
       service_level_agreement: 5
+      weight: 0.35
     - category: Debit Card
       subcategory: Local Onsite ABM Deposit
       description_two: Deposit Error - Partial deposit
       service_level_agreement: 5
+      weight: 0.35
     - category: Debit Card
       subcategory: Local POS
       description_two: Customer claims transaction was duplicated by the merchant
       service_level_agreement: 15
+      weight: 0.15
     - category: Debit Card
       subcategory: Local POS
       description_two: Customer claims transaction was duplicated by the merchant
       service_level_agreement: 120
+      weight: 0.15
     - category: Debit Card
       subcategory: Local POS
       description_two: Customer claims transaction was duplicated by the merchant
       service_level_agreement: 95
+      weight: 0.15
     - category: Debit Card
       subcategory: Local POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 15
+      weight: 0.15
     - category: Debit Card
       subcategory: Local POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 120
+      weight: 0.15
     - category: Debit Card
       subcategory: Local POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 95
+      weight: 0.15
     - category: BSC - Corporate
       subcategory: Checking Accounts
       description_two: Debit / Credit Inquiry
       service_level_agreement: 30
+      weight: 0.02
     - category: BSC - Corporate
       subcategory: Checking Accounts
       description_two: Identify Debit/Credit
       service_level_agreement: 30
+      weight: 0.02
     - category: BSC - Corporate
       subcategory: Checking Accounts
       description_two: Reversal / Correction
       service_level_agreement: 30
+      weight: 0.02
     - category: BSC - Corporate
       subcategory: Checking Accounts
       description_two: Reversal/Correction Tax 0.15
       service_level_agreement: 30
+      weight: 0.02
     - category: BSC - Corporate
       subcategory: Checking Accounts
       description_two: Wire Investigation
       service_level_agreement: 30
+      weight: 0.02
     - category: BSC - Corporate
       subcategory: Checking Accounts
       description_two: WIRE/RTGS Investigation
       service_level_agreement: 30
+      weight: 0.02
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: Cheque Inquiry
       service_level_agreement: 30
+      weight: 0.015
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: Identify Debit/Credit
       service_level_agreement: 30
+      weight: 0.015
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: Reversal / Correction
       service_level_agreement: 30
+      weight: 0.015
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: RTGS Recall
       service_level_agreement: 30
+      weight: 0.015
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: Wire Investigation
       service_level_agreement: 30
+      weight: 0.015
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: Wire Recall
       service_level_agreement: 30
+      weight: 0.015
     - category: BSC - Corporate
       subcategory: Saving Accounts
       description_two: WIRE/RTGS Investigation
       service_level_agreement: 30
+      weight: 0.015
     - category: Debit Deposit Accounts
       subcategory: Unrecognized Debit/Credit
       description_two: Customer claims has not yet recieved expected credit
       service_level_agreement: 30
+      weight: 0.15
     - category: Debit Deposit Accounts
       subcategory: Unrecognized Debit/Credit
       description_two: Customer does not recognize debit or credit
       service_level_agreement: 30
+      weight: 0.15
     - category: Debit Deposit Accounts
       subcategory: Unrecognized Debit/Credit
       description_two: Customer doesn't recognize credit on their account
       service_level_agreement: 30
+      weight: 0.15
     - category: Debit Deposit Accounts
       subcategory: Unrecognized Debit/Credit
       description_two: Customer doesn't recognize debit on their account
       service_level_agreement: 30
+      weight: 0.15
     - category: Disputes below USD50
       subcategory: International POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 5
+      weight: 0.1
     - category: Disputes below USD50
       subcategory: Local POS
       description_two: Customer claims transaction was duplicated by the merchant
       service_level_agreement: 5
+      weight: 0.01
     - category: Disputes below USD50
       subcategory: Local POS
       description_two: Customer doesn't recognize transaction
       service_level_agreement: 5
+      weight: 0.01
     - category: Disputes below USD50
       subcategory: Local POS
       description_two: Investigation for credit not processed by Merchant
       service_level_agreement: 5
+      weight: 0.01
     - category: Disputes below USD50
       subcategory: Local POS
       description_two: Investigaton paid by other means
       service_level_agreement: 5
+      weight: 0.01
     - category: Disputes below USD50
       subcategory: Local POS
       description_two: Transaction cancelled by Merchant
       service_level_agreement: 5
+      weight: 0.01
     - category: Electronic Transactions
       subcategory: Bill Payments
       description_two: Bill payment remains unapplied
       service_level_agreement: 30
+      weight: 0.05
     - category: Electronic Transactions
       subcategory: Bill Payments
       description_two: Customer made a electronic transfer to pay a bill but was not recieved by company
       service_level_agreement: 30
+      weight: 0.05
     - category: Electronic Transactions
       subcategory: Bill Payments
       description_two: Customer selected the wrong vendor and wishes to recall the funds
       service_level_agreement: 30
+      weight: 0.05
     - category: Electronic Transactions
       subcategory: Bill Payments
       description_two: Customer transferred to an incorrect account, claims correction
       service_level_agreement: 30
+      weight: 0.05
     - category: Electronic Transactions
       subcategory: INTL Wire Transfers
       description_two: Beneficiary claims non reciept of the funds, customer claims credit confirmation
       service_level_agreement: 5
+      weight: 0.065
     - category: Electronic Transactions
       subcategory: INTL Wire Transfers
       description_two: Customer requesting detail of charges
       service_level_agreement: 5
+      weight: 0.065
     - category: Electronic Transactions
       subcategory: INTL Wire Transfers
       description_two: Customer wishes to recall the funds
       service_level_agreement: 5
+      weight: 0.065
     - category: Electronic Transactions
       subcategory: INTL Wire Transfers
       description_two: Incoming OFAC confirmation
       service_level_agreement: 5
+      weight: 0.065
     - category: Electronic Transactions
       subcategory: Local Wire Transfers
       description_two: Beneficiary claims non reciept of the funds, customer claims credit confirmation
       service_level_agreement: 30
+      weight: 0.25
     - category: Electronic Transactions
       subcategory: Local Wire Transfers
       description_two: Customer requesting detail of charges
       service_level_agreement: 30
+      weight: 0.25
     - category: Electronic Transactions
       subcategory: Local Wire Transfers
       description_two: Customer wishes to recall the funds
       service_level_agreement: 30
+      weight: 0.25
     - category: Electronic Transactions
       subcategory: Local Wire Transfers
       description_two: Incoming OFAC confirmation
       service_level_agreement: 30
+      weight: 0.25
     - category: Electronic Transactions
       subcategory: Third Party Transfers
       description_two: Customer made a electronic transfer to pay a bill but was not recieved by company
       service_level_agreement: 30
+      weight: 0.3
     - category: Electronic Transactions
       subcategory: Third Party Transfers
       description_two: Customer selected the wrong beneficiary and wishes to recall the funds
       service_level_agreement: 30
+      weight: 0.3
     - category: Electronic Transactions
       subcategory: Third Party Transfers
       description_two: Customer transferred to an incorrect account, claims correction
       service_level_agreement: 30
+      weight: 0.3
     - category: Electronic Transactions
       subcategory: Third Party Transfers
       description_two: Third Party Transfers remains unapplied
       service_level_agreement: 30
+      weight: 0.3
     - category: Personal Loan
       subcategory: LOAN ISSUES
       description_two: Customer requests a loan review
       service_level_agreement: 30
+      weight: 0.15
     - category: Personal Loan
       subcategory: LOAN ISSUES
       description_two: Payment applied/credited erroneously
       service_level_agreement: 30
+      weight: 0.15
     - category: Regulatory
       subcategory: CBD Request
       description_two: Contract open s/b clsoed - Credit Card
       service_level_agreement: 12
+      weight: 0.25
   Complaints:
     weight: 0.05
     variants:
@@ -297,38 +369,47 @@ incident_variants:
       complaint_description: Transaction not recognized - Scotia Vida
       prod_channel: Chequing / Savings Account
       service_level_agreement: 5
+      weight: 1
     - complaint_type: Insurance
       complaint_description: Duplicate Transaction - Card and Account Protection (Fraud)
       prod_channel: Credit Card
       service_level_agreement: 7
+      weight: 1
     - complaint_type: Product
       complaint_description: Other
       prod_channel: Chequing / Savings Account
       service_level_agreement: 14
+      weight: 1
     - complaint_type: Service Issues
       complaint_description: Customer information incorrect
       prod_channel: Contact Centre
       service_level_agreement: 21
+      weight: 1
     - complaint_type: Service Issues
       complaint_description: Commitments not kept
       prod_channel: CRCU
       service_level_agreement: 14
+      weight: 1
     - complaint_type: Service Issues
       complaint_description: Processing delays resulting in financial losses to the customer
       prod_channel: CRCU
       service_level_agreement: 14
+      weight: 1
     - complaint_type: Service Issues
       complaint_description: Charges misapplied / duplicated
       prod_channel: Retail Banking
       service_level_agreement: 21
+      weight: 1
     - complaint_type: Service Issues
       complaint_description: Processing delays resulting in financial losses to the customer
       prod_channel: Retail Banking
       service_level_agreement: 14
+      weight: 1
     - complaint_type: Service Issues
       complaint_description: Poor advice / Lack of knowledge
       prod_channel: Small Business Banking
       service_level_agreement: 21
+      weight: 1
   Requests:
     weight: 0.8
     variants:
@@ -336,483 +417,604 @@ incident_variants:
       subcategory: Chargebacks
       description_two: Client requests transaction investigation for duplicity
       service_level_agreement: 120
+      weight: 0.025
     - category: Credit Card
       subcategory: Chargebacks
       description_two: Client requests transcation investigation for fraud
       service_level_agreement: 120
+      weight: 0.025
     - category: Credit Card
       subcategory: Chargebacks
       description_two: Client requests transaction investigation for not recognizing
       service_level_agreement: 120
+      weight: 0.025
     - category: Credit Card
       subcategory: Chargebacks
       description_two: Client requests transaction investigation for service not dispensed
       service_level_agreement: 120
+      weight: 0.025
     - category: Credit Card
       subcategory: Chargebacks
       description_two: Customer is requesting interest calculation
       service_level_agreement: 120
+      weight: 0.025
     - category: Credit Card
       subcategory: Chargebacks
       description_two: Investigation for credit not processed by Merchant
       service_level_agreement: 120
+      weight: 0.025
     - category: Credit Card
       subcategory: Contact Center Request
       description_two: CC / Statement Request
       service_level_agreement: 2
+      weight: 0.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Additional
       service_level_agreement: 5
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Bill Address
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Close (NA-Charge Off)
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Credit Card Status Change
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Credit Limit Distribution
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Credit Limit Unification
       service_level_agreement: 5
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / General Maintenance
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Insurance cancellation
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Product Change / Upgrade
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Non Monetary Maintenance
       description_two: Mant. CC / Replacement (General reasons)
       service_level_agreement: 3
+      weight: 1.6
     - category: Credit Card
       subcategory: Operations
       description_two: Cards Movement
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Client requests clear balance (for closure)
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Client requests
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Client requests Payment application
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Client requests points/cash back
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Client requests Reverse of Internal Charges
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Collection - Fixed Payment Plan Requests
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: CUOTAS cash advance campaigns
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Customer is requesting Correction or Transfer of Payments
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Customer is requesting overpay reimbursement
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Installments - Acceleration
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Installments All Requests
       service_level_agreement: 3
+      weight: 1.75
     - category: Credit Card
       subcategory: Operations
       description_two: Write off Records request
       service_level_agreement: 3
+      weight: 1.75
     - category: Insurance
       subcategory: Insurance Cancellation
       description_two: Checking Accounts/Card and Account Protection (Fraud)
       service_level_agreement: 5
+      weight: 1
     - category: Insurance
       subcategory: Insurance Cancellation
       description_two: Credit Card/Card and Account Protection (Fraud)
       service_level_agreement: 5
+      weight: 1
     - category: Insurance
       subcategory: Insurance Cancellation
       description_two: Credit Card/Fire Coverage (Individual)
       service_level_agreement: 5
+      weight: 1
     - category: Merchant Services
       subcategory: Agency
       description_two: Air Tickets
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Agency
       description_two: Concert Tickets
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Agency
       description_two: Cruise Ships
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Agency
       description_two: Hotels
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Agency
       description_two: Insurance
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Agency
       description_two: Rent a Car
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Agency
       description_two: Tourist Package
       service_level_agreement: 10
+      weight: 0.15
     - category: Merchant Services
       subcategory: Credits
       description_two: CC renovation retained customer
       service_level_agreement: 3
+      weight: 1.15
     - category: Merchant Services
       subcategory: Credits
       description_two: Credit Card Credit
       service_level_agreement: 3
+      weight: 1.15
     - category: Merchant Services
       subcategory: Credits
       description_two: Savings Account Credit
       service_level_agreement: 3
+      weight: 1.15
     - category: Merchant Services
       subcategory: Gift Cards
       description_two: Amazon Gift Card
       service_level_agreement: 4
+      weight: 0.25
     - category: Merchant Services
       subcategory: Gift Cards
       description_two: International
       service_level_agreement: 4
+      weight: 0.25
     - category: Merchant Services
       subcategory: Gift Cards
       description_two: Local
       service_level_agreement: 4
+      weight: 0.25
     - category: Merchant Services
       subcategory: Gift Cards
       description_two: Movie Tickets
       service_level_agreement: 4
+      weight: 0.25
     - category: Merchant Services
       subcategory: Merchant Inquiries
       description_two: Batch Payment
       service_level_agreement: 2
+      weight: 0.65
     - category: Merchant Services
       subcategory: Merchant Inquiries
       description_two: Refund
       service_level_agreement: 2
+      weight: 0.65
     - category: Merchant Services
       subcategory: Merchant Maintenance
       description_two: Regular Data Modification
       service_level_agreement: 60
+      weight: 0.3
     - category: Merchant Services
       subcategory: Merchant Maintenance
       description_two: Profile Data Modification
       service_level_agreement: 3
+      weight: 0.3
     - category: Merchant Services
       subcategory: Merchant Reports
       description_two: Merchant Statement
       service_level_agreement: 2
+      weight: 2
     - category: ACH Recalls
       subcategory: ACH Recalls from Other Banks
       description_two: Online Banking Transfer
       service_level_agreement: 90
+      weight: 0.4
     - category: Advice & Counsel
       subcategory: A&C-Advice & Counsel
       description_two: For guidance on policy, procedure and general information
       service_level_agreement: 3
+      weight: 0.15
     - category: Advice & Counsel
       subcategory: ABM Differences
       description_two: Notify ABM Differences
       service_level_agreement: 3
+      weight: 0.25
     - category: Advice & Counsel
       subcategory: CH-Over Limit Reporting
       description_two: Notify cash holding overlimit situation
       service_level_agreement: 3
+      weight: 0.6
     - category: Advice & Counsel
       subcategory: Monthly GL Certification
       description_two: Submit Monthly GL Certification
       service_level_agreement: 3
+      weight: 0.3
     - category: Advice & Counsel
       subcategory: MOS - Special Requests
       description_two: MOS special requests
       service_level_agreement: 5
+      weight: 0.1
     - category: Advice & Counsel
       subcategory: Teller Differences
       description_two: Notify Teller Differences
       service_level_agreement: 3
+      weight: 0.25
     - category: Authorization Request
       subcategory: CL-Write-Off
       description_two: Request authorization to write off cashlosses > USD$2,500.00
       service_level_agreement: 7
+      weight: 0.05
     - category: Authorization Request
       subcategory: Draft Replacement
       description_two: Replace draft replacement authorization
       service_level_agreement: 5
+      weight: 0.05
     - category: CFM Request
       subcategory: CC - Card Unblock
       description_two: Unblock Card - Confirmed legitimate suspicious tx
       service_level_agreement: 3
+      weight: 0.15
     - category: CFM Request
       subcategory: CC - Fraud
       description_two: Report Fraud on Card
       service_level_agreement: 3
+      weight: 0.6
     - category: CFM Request
       subcategory: CC - Fraud Declines
       description_two: Apply Maintenance Due to Declines on Card
       service_level_agreement: 3
+      weight: 1
     - category: CFM Request
       subcategory: CC Fraud Declines
       description_two: Advice messages not an approval decline
       service_level_agreement: 1
+      weight: 1.2
     - category: CFM Request
       subcategory: CC Fraud Declines
       description_two: ASSOC RTD Decline
       service_level_agreement: 1
+      weight: 1.2
     - category: CFM Request
       subcategory: CC Fraud Declines
       description_two: Do Not Honor Decline
       service_level_agreement: 1
+      weight: 1.2
     - category: CFM Request
       subcategory: CC Fraud Declines
       description_two: Falcon Decline
       service_level_agreement: 1
+      weight: 1.2
     - category: CFM Request
       subcategory: CC Fraud Declines
       description_two: MNP Decline
       service_level_agreement: 1
+      weight: 1.2
     - category: CFM Request
       subcategory: CC Fraud Declines
       description_two: Security Violation Decline
       service_level_agreement: 1
+      weight: 1.2
     - category: CFM Request
       subcategory: CC Suspect Compromise
       description_two: Remove block, customer confirms legitimate transaction
       service_level_agreement: 1
+      weight: 0.85
     - category: CFM Request
       subcategory: General Request
       description_two: General Request
       service_level_agreement: 3
+      weight: 3
     - category: Collections - CRCU
       subcategory: Credit Bureau
       description_two: Credit Bureau Update according to our system
       service_level_agreement: 30
+      weight: 0.3
     - category: Collections - CRCU
       subcategory: Letters
       description_two: Certification of debt letter
       service_level_agreement: 30
+      weight: 0.5
     - category: Collections - CRCU
       subcategory: Letters
       description_two: Credit Card balance letter
       service_level_agreement: 30
+      weight: 0.5
     - category: Collections - CRCU
       subcategory: Letters
       description_two: Loan payout letter
       service_level_agreement: 30
+      weight: 0.5
     - category: Collections - CRCU
       subcategory: Mitigation Tools (LMT)
       description_two: ADP
       service_level_agreement: 2
+      weight: 0.1
     - category: Collections - CRCU
       subcategory: Mitigation Tools (LMT)
       description_two: Debt Consolidation
       service_level_agreement: 15
+      weight: 0.1
     - category: Collections - CRCU
       subcategory: Opposition Lifting / Vehicle and Mortage
       description_two: Review credit bureau and update system
       service_level_agreement: 1
+      weight: 0.05
     - category: Collections - CRCU
       subcategory: Opposition Lifting / Vehicle and Mortage
       description_two: Review credit bureau and update system
       service_level_agreement: 2
+      weight: 0.05
     - category: Collections - CRCU
       subcategory: Opposition Lifting / Vehicle and Mortage
       description_two: Review credit bureau and update system
       service_level_agreement: 4
+      weight: 0.05
     - category: Debit Deposit Accounts
       subcategory: Account Closure
       description_two: Account Closure
       service_level_agreement: 3
+      weight: 1.75
     - category: Debit Deposit Accounts
       subcategory: Contact Center Request
       description_two: Add permanent order
       service_level_agreement: 2
+      weight: 0.05
     - category: Debit Deposit Accounts
       subcategory: Contact Center Request
       description_two: DDA / Statement Request
       service_level_agreement: 2
+      weight: 0.05
     - category: Debit Deposit Accounts
       subcategory: Contact Center Request
       description_two: Eliminate permanent order
       service_level_agreement: 2
+      weight: 0.05
     - category: Debit Deposit Accounts
       subcategory: Contact Center Request
       description_two: Request to unify Cifkey
       service_level_agreement: 2
+      weight: 0.05
     - category: Debit Deposit Accounts
       subcategory: Taxes
       description_two: Request Tax Receipts
       service_level_agreement: 2
+      weight: 0.15
     - category: Debit Deposit Accounts
       subcategory: Taxes
       description_two: Reverse tax 0.15% per transfer
       service_level_agreement: 2
+      weight: 0.15
     - category: Debit Deposit Accounts
       subcategory: Unrecognized Debit/Credit
       description_two: Customer does not recognize debit or credit
       service_level_agreement: 5
+      weight: 0.1
     - category: Digital letters - Contact Center only
       subcategory: Consular or reference letter
       description_two: Letter in spanish
       service_level_agreement: 2
+      weight: 0.01
     - category: Digital letters - Contact Center only
       subcategory: Credit Card pay-out letter
       description_two: Letter in spanish
       service_level_agreement: 2
+      weight: 0.05
     - category: Digital letters - Contact Center only
       subcategory: Loan pay-out letter
       description_two: Letter in spanish
       service_level_agreement: 2
+      weight: 0.05
     - category: Electronics transactions
       subcategory: INTL Wire Transfers
       description_two: Incoming Wire Credit Confirmation required. Customer expecting funds and claims non-receipt
       service_level_agreement: 5
+      weight: 0.05
     - category: Electronics transactions
       subcategory: INTL Wire Transfers
       description_two: Incoming Wire-Customer requests details of charges
       service_level_agreement: 5
+      weight: 0.05
     - category: Electronics transactions
       subcategory: INTL Wire Transfers
       description_two: Outgoing Wire-Customer requests copy of one/various SWIFT Acknowledgements
       service_level_agreement: 5
+      weight: 0.05
     - category: Electronics transactions
       subcategory: INTL Wire Transfers
       description_two: Outgoing Wire-Request for confirmation of release/status, Benificiary claims non receipt
       service_level_agreement: 5
+      weight: 0.05
     - category: Electronics transactions
       subcategory: Local Wire Transfers
       description_two: Incoming Wire Credit Confirmation required. Customer expecting funds and claims non-receipt
       service_level_agreement: 5
+      weight: 0.05
     - category: Electronics transactions
       subcategory: Local Wire Transfers
       description_two: Incoming Wire-Customer requests details of charges
       service_level_agreement: 5
+      weight: 0.05
     - category: Electronics transactions
       subcategory: Local Wire Transfers
       description_two: Outgoing Wire-Request for confirmation of release/status, Benificiary claims non receipt
       service_level_agreement: 5
+      weight: 0.05
     - category: Lending Service Unit (LSU)
       subcategory: Letters
       description_two: Customer Requests a Mortage Radiation
       service_level_agreement: 2
+      weight: 0.35
     - category: Letters
       subcategory: Letters
       description_two: Reference Letter
       service_level_agreement: 2
+      weight: 0.35
     - category: Loan
       subcategory: Request
       description_two: Amortization Table
       service_level_agreement: 5
+      weight: 0.025
     - category: Loan
       subcategory: Request
       description_two: Loan History
       service_level_agreement: 5
+      weight: 0.025
     - category: Loan
       subcategory: Request
       description_two: Request Tax Receipts
       service_level_agreement: 5
+      weight: 0.025
     - category: Maintenance & Amendment
       subcategory: Loan Amendment
       description_two: Principal Payment
       service_level_agreement: 15
+      weight: 0.15
     - category: Maintenance & Amendment
       subcategory: Loan Amendment
       description_two: Rate Change
       service_level_agreement: 15
+      weight: 0.15
     - category: Maintenance & Amendment
       subcategory: SPL Maintenance
       description_two: Payment Date Change
       service_level_agreement: 3
+      weight: 0.15
     - category: Maintenance Loans
       subcategory: Loan Maintenance
       description_two: Loan status changes
       service_level_agreement: 5
+      weight: 0.2
     - category: Manual Name Screening
       subcategory: World Check Validation
       description_two: Individual
       service_level_agreement: 1
+      weight: 1.6
     - category: Manual Name Screening
       subcategory: World Check Validation
       description_two: Business
       service_level_agreement: 8
+      weight: 1.6
     - category: Processing Deposits
       subcategory: Customer reimbursement
       description_two: Customer claims reimbursement
       service_level_agreement: 5
+      weight: 0.15
     - category: Processing Deposits
       subcategory: IBA
       description_two: Inter branch remittance
       service_level_agreement: 5
+      weight: 1.25
     - category: Processing Deposits
       subcategory: MICR processing
       description_two: Bulk processing of entries
       service_level_agreement: 5
+      weight: 0.3
     - category: Processing Loans
       subcategory: Loan Amendment
       description_two: Loan Amendment
       service_level_agreement: 5
+      weight: 0.3
     - category: Processing Loans
       subcategory: Loan Payments
       description_two: Loan payments and reversals
       service_level_agreement: 5
+      weight: 0.55
     - category: Processing Loans
       subcategory: Loan Entries
       description_two: Loans monetary entries
       service_level_agreement: 5
+      weight: 0.45
     - category: Processing Loans
       subcategory: POS Virtual
       description_two: CRCU customer payments via POS
       service_level_agreement: 5
+      weight: 0.2
     - category: Regulatory
       subcategory: Regulatory
       description_two: PRO Usuario - Data Certification
       service_level_agreement: 30
+      weight: 0.25
     - category: Regulatory
       subcategory: Regulatory
       description_two: SIB - Information Requirements
       service_level_agreement: 30
+      weight: 0.25
     - category: USD Draft
       subcategory: Validate
       description_two: Single Payee
       service_level_agreement: 1
+      weight: 1
     - category: Wires
       subcategory: Processing
       description_two: Process Payment/Message as per instruction
       service_level_agreement: 5
+      weight: 0.6
