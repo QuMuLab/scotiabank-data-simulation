@@ -169,7 +169,10 @@ class Employee(object):
 
             return incident
 
-        if unassigned_queue and random.random() < config.select_unassigned_incident_chance:
+        if unassigned_queue and (
+            self.env.now >= config.simulation_days * 24
+            or random.random() < config.select_unassigned_incident_chance
+        ):
             unassigned_queue.sort(key = lambda inc: inc.time_remaining_hours())
 
             incident = unassigned_queue[0]
@@ -191,6 +194,9 @@ class Employee(object):
         return None
     
     def create_incident(self):
+        if self.env.now >= config.simulation_days * 24:
+            return None
+
         incident_types = list(config.incident_variants.keys())
         incident_weights = [
             config.incident_variants[incident_type]["weight"]
@@ -235,9 +241,6 @@ class Employee(object):
                 service_level_agreement = variant["service_level_agreement"],
                 employee = self
             )
-
-        if config.simulation_days * 24 - self.env.now <= 0:
-            return None
 
         return incident
 
@@ -408,6 +411,7 @@ class Incident(object):
         self.complaint_description = complaint_description
 
         self.created_at = self.env.now
+        self.completed = env.event()
         self.event_sequence = itertools.count()
         self.work_sessions = 0
         self.clarification_count = 0
@@ -537,6 +541,9 @@ class Incident(object):
         self.log_action("Field Edited", description, field, newval, prevval)
 
     def access_incident(self):
+        if self.completed.triggered:
+            return
+
         self.access_controls += 1
         self.log_action("Access Control")
 
@@ -574,12 +581,14 @@ class Incident(object):
         self.env.process(self.access_control_burst(burst_time, 2, 10))
 
         self.current_employee.current_incident = None
+        self.completed.succeed()
 
     def cancel_incident(self):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
 
         self.log_action("Cancelled")
         self.current_employee.current_incident = None
+        self.completed.succeed()
 
     def close_incident(self):
         yield from business_hours_timeout(self.env, 0.5 / 3600)
@@ -621,6 +630,7 @@ class Incident(object):
             self.log_action("Field Edited", "CUSTOMER SATISFACTION", "customersatisfaction", customer_satisfaction)
 
         self.current_employee.current_incident = None
+        self.completed.succeed()
 
     def time_remaining_hours(self) -> float:
         sla_total_hours = self.service_level_agreement * 24
@@ -640,7 +650,7 @@ class Incident(object):
         return self.time_remaining_hours() <= sla_total_hours * threshold
 
     def log_action(self, action_type: str, description = None, field = None, newval = None, prevval = None):
-        include_reception_channel = True
+        include_reception_channel = False
 
         field_activity_map = {
             "incidenttype" : "INCIDENT TYPE",
@@ -649,7 +659,7 @@ class Incident(object):
         }
         activity = None
 
-        if action_type in ["Pending", "Access Control", "Closed"]:
+        if action_type in ["Pending", "Access Control", "Closed", "Cancelled", "Reassigned"]:
             activity = action_type.upper()
 
         elif action_type == "Field Edited" and field in ["incidenttype", "clarification_reason", "responsetype"]:

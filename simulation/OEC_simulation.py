@@ -13,9 +13,11 @@ def generate_transits():
         config.transits.append(f"{transit_number} {city}")
 
 def generate_join_table(df: pd.DataFrame):
-    df = df[["activity", "case_id", "timestamp"]]
-    df = df[df["activity"].notna()]
-    df = df.sort_values(by = ["case_id", "timestamp"])
+    df = df.loc[
+        df["activity"].notna(),
+        ["activity", "case_id", "timestamp", "sequence"]
+    ].copy()
+    df = df.sort_values(by = ["case_id", "timestamp", "sequence"])
 
     df.to_csv("OEC_event_table.csv", index = False)
 
@@ -45,8 +47,17 @@ def run_simulation(employee_count: int) -> pd.DataFrame:
             env.run(until = next_time)
             progress.update(1)
 
+    pending_completions = [
+        incident.completed
+        for incident in config.incidents
+        if not incident.completed.triggered
+    ]
+
+    if pending_completions:
+        env.run(until = env.all_of(pending_completions))
+
     df = pd.DataFrame(config.event_logs)
-    df = df.sort_values(by = ["incident_itemno", "timestamp"])
+    df = df.sort_values(by = ["incident_itemno", "timestamp", "sequence"])
     df.to_csv("OEC_information_table.csv", index = False)
 
     generate_join_table(df)
